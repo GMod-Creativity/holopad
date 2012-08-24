@@ -1,0 +1,12 @@
+"AddonInfo"
+{
+	"name"		"Holopad 2"
+	"version"	"who knows"
+	"up_date"	"09/07/2012"
+	"author_name"	"Bubbus"
+	"author_email"	"splambob@gmail.com"
+	"author_url"	""
+	
+	"info"		"A fully clientside wiremod-hologram manipulation studio"
+
+}
