@@ -22,6 +22,7 @@ include("holopad/gui/DContextPanel_RotateMode_Holopad.lua")
 include("holopad/gui/DContextPanel_ScaleMode_Holopad.lua")
 include("holopad/gui/DContextPanel_SelectMode_Holopad.lua")
 include("holopad/gui/DContextPanel_CameraMode_Holopad.lua")
+include("holopad/gui/DMatSelect_Holopad.lua")
 
 
 local PANEL = {}
@@ -104,12 +105,33 @@ function PANEL:Init()
 																		self.contextPanel:SetModelObj(self.ModelObj)
 																	end)
 	
-	self:addButton("holopad/select", 	"Select Holos", 			function()
+	local sel = self:addButton("holopad/select", 	"Select Holos", function()
 																		self.ViewPanel:GetMouseHandler():setActiveMode("select")
 																		if self.contextPanel then if self.contextPanel.ControlType != "select" then self.contextPanel:Close() else return end end
 																		self.contextPanel = vgui.Create( "DContextPanel_SelectMode_Holopad", self )
 																		self.contextPanel:SetModelObj(self.ModelObj)
 																	end)
+	
+	local function selholo(success, holo)
+		if !(success or self.ModelObj) then return end
+		if !holo then Error("Selected holo does not exist?!?!  Report this to Bubbus!") return end
+		self.ModelObj:selectEnt(holo, true)
+	end
+	
+	local selmenubutton = vgui.Create( "DCentredImageButton", sel )
+	selmenubutton:SetSize( 18, 18 )
+	selmenubutton:SetText("")
+	selmenubutton:SetImage("gui/silkicons/application_view_detail")
+	selmenubutton:SetTooltip( "Find Hologram in List" )
+	selmenubutton.OnMousePressed =	function()
+										if !self.ModelObj then Error("No ModelObj exists, cannot create selection list.") return end
+										local menu = vgui.Create("DEntityDialogue_Holopad", self)
+										menu:SetModelObj(self.ModelObj)
+										menu:SetCallback(selholo)
+									end
+	selmenubutton:SetDrawBorder( true )
+    selmenubutton:SetDrawBackground( true )
+	selmenubutton:SetPos(sel:GetWide() - selmenubutton:GetWide(), 0)
 	
 	self:addButton("holopad/move", 		"Move Holos", 				function()
 																		self.ViewPanel:GetMouseHandler():setActiveMode("move")

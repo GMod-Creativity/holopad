@@ -97,7 +97,7 @@ function PANEL:createControls()
 	
 	local MOVEMAX = 500
 	local colourCube, wangR, wangG, wangB, wangA, setColourButton, saveColourButton, loadColourButton
-	local matEntry, setMatButton, setMdlButton
+	local matEntry, setMatButton, matMenuButton, setMdlButton
 	local nameEntry, setNameButton, addClipButton, cloneButton
 	local wanging = false
 	local RED, GREEN, BLUE, ALPHA = 1, 2, 3, 4
@@ -130,6 +130,25 @@ function PANEL:createControls()
 				v:setMaterial(mat)
 			end
 		end
+	end
+	
+	
+	local function dholoMatCallback(success, mat)
+		if !(success or self.ModelObj) then return end
+		if !mat then Error("Selected material is nil?!?!  Report this to Bubbus!") return end
+		local sel = self:GetModelObj():getSelectedEnts()
+		
+		for i=1, #sel do
+			sel[i]:setMaterial(mat)
+		end
+	end
+	
+	
+	local function dholoMatMenu()
+		if !self:GetModelObj() then Error("No ModelObj exists, cannot create selection list.") return end
+		local menu = vgui.Create("DMatSelect_Holopad", self)
+		//menu:SetModelObj(self:GetModelObj())
+		menu:SetCallback(dholoMatCallback)
 	end
 	
 	
@@ -413,8 +432,19 @@ function PANEL:createControls()
 	
 	ypos = ypos + 5 + matlabel:GetTall()
 	
+	
+	matMenuButton = vgui.Create( "DCentredImageButton", apppanel )
+	matMenuButton:SetSize( 20, 20 )
+	matMenuButton:SetText("")
+	matMenuButton:SetImage("gui/silkicons/application_view_detail")
+	matMenuButton:SetTooltip( "Find Material in List" )
+	matMenuButton.OnMousePressed =	dholoMatMenu
+	matMenuButton:SetDrawBorder( true )
+    matMenuButton:SetDrawBackground( true )
+	matMenuButton:SetPos(165, ypos)
+	
 	matEntry = vgui.Create("DTextEntry", apppanel)
-	matEntry:SetWidth(180)
+	matEntry:SetWidth(155)
 	matEntry:SetPos(5, ypos)
 	
 	ypos = ypos + 25

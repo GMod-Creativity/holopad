@@ -97,7 +97,7 @@ end
 
 
 function PANEL:SetModelObj(mdl)
-	if !mdl then Error("nomodel wat") end
+	if !mdl then Error("Tried to set the ModelObj to nil! Naughty!") end
 	self.list:Clear()
 	self.modelobj = model
 	
