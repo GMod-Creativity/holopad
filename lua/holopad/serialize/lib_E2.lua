@@ -248,7 +248,7 @@ function lib.WriteClip(ret, clip)
 
 	ret.add(tab..tab.."## "..nam.."\n")
 	//savefile:Write(tab..tab..string.format("holoClip(I, J, holoEntity(I):toLocal(entity():toWorld(vec(%.3f, %.3f, %.3f))), holoEntity(I):toLocal(entity():toWorld(vec(%.3f, %.3f, %.3f))), 0)", 
-	ret.add(tab..tab..string.format("holoClip(I, J, holoEntity(I):toLocal(entity():toWorld(vec(%.3f, %.3f, %.3f))), holoEntity(I):toLocalAxis(entity():toWorldAxis(vec(%.3f, %.3f, %.3f))), 0)", 
+	ret.add(tab..tab..string.format("holoClip(I, J, holoEntity(I):toLocal(entity():toWorld(vec(%.6f, %.6f, %.6f))), holoEntity(I):toLocalAxis(entity():toWorldAxis(vec(%.6f, %.6f, %.6f))), 0)", 
 					pos.x, pos.y, pos.z,	// position
 					nrm.x, nrm.y, nrm.z))	// normal
 					
@@ -281,9 +281,9 @@ function lib.WriteHolo(ret, holo)
 	ret.add(tab.."## "..nam.."\n")
 	ret.add(tab.."holoCreate(I)\n")
 	ret.add(tab.."holoModel(I, \""..mdl.."\")\n")
-	ret.add(tab..string.format("holoPos(I, entity():toWorld(vec(%.3f, %.3f, %.3f)))\n", pos.x, pos.y, pos.z))
-	ret.add(tab..string.format("holoAng(I, entity():toWorld(ang(%.3f, %.3f, %.3f)))\n", ang.p, ang.y, ang.r))
-	ret.add(tab..string.format("holoScale(I, vec(%.3f, %.3f, %.3f))\n", scl.x, scl.y, scl.z))
+	ret.add(tab..string.format("holoPos(I, entity():toWorld(vec(%.6f, %.6f, %.6f)))\n", pos.x, pos.y, pos.z))
+	ret.add(tab..string.format("holoAng(I, entity():toWorld(ang(%.6f, %.6f, %.6f)))\n", ang.p, ang.y, ang.r))
+	ret.add(tab..string.format("holoScale(I, vec(%.6f, %.6f, %.6f))\n", scl.x, scl.y, scl.z))
 	ret.add(tab..string.format("holoColor(I, vec(%i, %i, %i), %i)\n", col.r, col.g, col.b, col.a))
 	if mat && mat != "" then
 		ret.add(tab.."holoMaterial(I, \""..mat.."\")\n")
