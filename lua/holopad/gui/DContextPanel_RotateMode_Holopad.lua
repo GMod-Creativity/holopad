@@ -120,7 +120,7 @@ function PANEL:createControls()
 	
 	self.receiveUpdate = function(update)
 	
-		if !(update.pos or update.selected or update.deselected) then return end
+		if !(update.ang or update.selected or update.deselected) then return end
 		
 		local model	= self:GetParent():GetModelObj()
 		local selent = model:getSelectedEnts()

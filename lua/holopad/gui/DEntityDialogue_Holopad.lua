@@ -80,9 +80,7 @@ function PANEL:Init()
 		end
 		if update.removed then
 			for k, v in pairs(self.list:GetLines()) do
-				print(v.ent)
 				if v.ent == update.ent then
-					print("found!", v.ent, k)
 					self.list:RemoveLine(k)
 					break
 				end

@@ -44,7 +44,10 @@ end
 
 
 local function roundWith(num, round)
-	return math.Round(num/round)*round
+	local abs = math.abs(num)
+	local mod = abs % round
+	if mod < round/2 then return (abs - mod)*(num/abs), -mod*(num/abs) end
+	return (abs + (round - mod))*(num/abs), (round - mod)*(num/abs)
 end
 
 local function roundToSnap(ang, snap)
@@ -69,11 +72,9 @@ function this:doSnap(pass, lpos)
 	if (input.IsKeyDown(KEY_LSHIFT) or input.IsKeyDown(KEY_RSHIFT)) and self.DragEnt then
 		// TODO: world orientation
 		// TODO: snap local to dongles
-		local grid	 = pass:GetViewport():GetGrid()
-		local ang	 = self.DragEnt:getAng()
-		//local rotang = grid:GetAngles()
+		local ang  = self.DragEnt:getAng()
 		local _, diff	// TODO: specialize roundWith for this usage.
-		local snap = Holopad.AngleSnap
+		local snap = Holopad.AngleSnap or 15
 		
 		if		self.DragDir == DRAGDIR_FOR then
 			_, diff = roundWith(ang.r, snap)

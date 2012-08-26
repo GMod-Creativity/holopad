@@ -121,9 +121,9 @@ function PANEL:createControls()
 	
 	self.receiveUpdate = function(update)
 	
-		if !(update.pos or update.selected or update.deselected) then return end
+		if !(update.scale or update.selected or update.deselected) then return end
 		
-		local model	= self:GetParent():GetModelObj()
+		local model	= self:GetModelObj()
 		local selent = model:getSelectedEnts()
 		local count	= #selent
 		selent = selent[1]
