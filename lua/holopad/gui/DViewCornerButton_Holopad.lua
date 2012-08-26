@@ -94,6 +94,38 @@ function PANEL:DoClick()
 																							viewport:ShowGrid(bool)
 																							viewport:GetModelObj():deselectAll()
 																						end )
+																						
+	local submenu3 = menu:AddSubMenu("Grid Styles")
+	
+		submenu3:AddOption( "Grey Lines", function()
+			viewport:GetGrid():SetMaterial("holopad/gridbw")
+			Holopad.GridMaterial = "holopad/gridbw"
+		end)
+		
+		submenu3:AddOption( "Grey Crosses", function()
+			viewport:GetGrid():SetMaterial("holopad/gridbwcr")
+			Holopad.GridMaterial = "holopad/gridbwcr"
+		end)
+		
+		submenu3:AddOption( "Grey Points", function()
+			viewport:GetGrid():SetMaterial("holopad/gridbwpt")
+			Holopad.GridMaterial = "holopad/gridbwpt"
+		end)
+		
+		submenu3:AddOption( "Colour Lines", function()
+			viewport:GetGrid():SetMaterial("holopad/gridcol")
+			Holopad.GridMaterial = "holopad/gridcol"
+		end)
+		
+		submenu3:AddOption( "Colour Crosses", function()
+			viewport:GetGrid():SetMaterial("holopad/gridcolcr")
+			Holopad.GridMaterial = "holopad/gridcolcr"
+		end)
+		
+		submenu3:AddOption( "Colour Points", function()
+			viewport:GetGrid():SetMaterial("holopad/gridcolpt")
+			Holopad.GridMaterial = "holopad/gridcolpt"
+		end)
 		
 	menu:Open()
 end	

@@ -51,6 +51,10 @@ if Holopad.Persist then
 		Holopad.Persist.RegisterGlobal("Holopad.GridAutoOrient")
 	end
 	
+	if !Holopad.Persist.IsRegistered("Holopad.GridMaterial") then
+		Holopad.Persist.RegisterGlobal("Holopad.GridMaterial")
+	end
+	
 	
 	// Snap settings
 	if !Holopad.Persist.IsRegistered("Holopad.AngleSnap") then
