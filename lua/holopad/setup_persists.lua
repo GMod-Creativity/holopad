@@ -5,10 +5,10 @@
 	|  __  |/ _ \| |/ _ \| '_ \ / _` |/ _` |
 	| |  | | (_) | | (_) | |_) | (_| | (_| |
 	|_|  |_|\___/|_|\___/| .__/ \__,_|\__,_|
-	By Bubbus			 | | Variable definitions
-	splambob@gmail.com	 |_| 09/07/2012               
+	By Bubbus			 | | Persisted variables
+	splambob@gmail.com	 |_| 20/08/2012               
 
-	Variables are cool also.
+	Persistence is very cool.
 	
 //*/
 
@@ -59,6 +59,12 @@ if Holopad.Persist then
 	
 	if !Holopad.Persist.IsRegistered("Holopad.ScaleSnap") then
 		Holopad.Persist.RegisterGlobal("Holopad.ScaleSnap")
+	end
+	
+	
+	// Viewport lighting
+	if !Holopad.Persist.IsRegistered("Holopad.ViewportLighting") then
+		Holopad.Persist.RegisterGlobal("Holopad.ViewportLighting")
 	end
 
 end

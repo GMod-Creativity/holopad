@@ -41,3 +41,6 @@ Holopad.GridAlpha = 100
 Holopad.ScaleSnap = 0.1
 // Angular snap units
 Holopad.AngleSnap = 15
+
+// Viewport lighting
+Holopad.ViewportLighting = "white"

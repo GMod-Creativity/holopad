@@ -70,6 +70,42 @@ Holopad.ViewportUpdates =
 local vpupdates = Holopad.ViewportUpdates
 
 
+
+/**
+	Functions for restoring persisted light settings
+ */
+local persistlight = {}
+persistlight["coloured"] =
+	function(viewport)
+		viewport:resetRenderSettings()
+		viewport:SetAmbientLight( Color( 255, 255, 255 ) )
+		viewport:SetDirectionalLight( BOX_FRONT,	Color( 255, 0, 0 ) )
+		viewport:SetDirectionalLight( BOX_BACK,		Color( 0, 255, 255 ) )
+		viewport:SetDirectionalLight( BOX_RIGHT,	Color( 0, 255, 0 ) )
+		viewport:SetDirectionalLight( BOX_LEFT,		Color( 255, 0, 255 ) )
+		viewport:SetDirectionalLight( BOX_TOP,		Color( 0, 0, 255 ) )
+		viewport:SetDirectionalLight( BOX_BOTTOM,	Color( 255, 255, 0 ) )
+	end
+persistlight["white"] =
+	function(viewport)
+		viewport:resetRenderSettings()
+		viewport:SetAmbientLight( Color( 50, 50, 50 ) )
+		viewport:SetDirectionalLight( BOX_RIGHT, Color( 255, 255, 255 ) )
+		viewport:SetDirectionalLight( BOX_TOP, Color( 255, 255, 255 ) )
+	end
+persistlight["shadowless"] = 
+	function(viewport)
+		viewport:resetRenderSettings()
+		viewport:SetAmbientLight( Color( 255, 255, 255 ) )
+	end
+persistlight["wireframe"] = 
+	function(viewport)
+		viewport:resetRenderSettings()
+		viewport:SetOverrideMaterial("models/wireframe")
+	end
+	
+	
+
 /*---------------------------------------------------------
 	Name: Init
 ---------------------------------------------------------*/
@@ -93,15 +129,6 @@ function PANEL:Init()
 	self:SetCamAng( Angle(30,210,0) )
     
     self:SetText( "" )
-    
-	//coloured lights
-    self:SetAmbientLight( Color( 128, 128, 128 ) )
-	self:SetDirectionalLight( BOX_FRONT,	Color( 255, 0, 0 ) )
-	self:SetDirectionalLight( BOX_BACK,		Color( 0, 255, 255 ) )
-	self:SetDirectionalLight( BOX_RIGHT,	Color( 0, 255, 0 ) )
-	self:SetDirectionalLight( BOX_LEFT,		Color( 255, 0, 255 ) )
-	self:SetDirectionalLight( BOX_TOP,		Color( 0, 0, 255 ) )
-	self:SetDirectionalLight( BOX_BOTTOM,	Color( 255, 255, 0 ) )
 	
 	self.StatLabel = vgui.Create( "DViewportStatLabel_Holopad", self )
 	self.StatLabel:SetViewport(self)
@@ -128,6 +155,10 @@ function PANEL:Init()
 	self:SetScaleOf(self.grid, Vector(1, 1, 0))
 	self.griddisplay = true
 	self:SetGridSize(Holopad.GridSize)
+	
+	local plighting = persistlight[Holopad.ViewportLighting] or persistlight["coloured"]
+	plighting(self)
+	
 end
 
 

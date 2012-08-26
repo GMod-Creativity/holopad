@@ -42,6 +42,7 @@ function PANEL:DoClick()
 				viewport:SetDirectionalLight( BOX_LEFT,		Color( 255, 0, 255 ) )
 				viewport:SetDirectionalLight( BOX_TOP,		Color( 0, 0, 255 ) )
 				viewport:SetDirectionalLight( BOX_BOTTOM,	Color( 255, 255, 0 ) )
+				Holopad.ViewportLighting = "coloured"
 			end)
 			
 			submenu1:AddOption( "White Lights", function()
@@ -49,16 +50,19 @@ function PANEL:DoClick()
 				viewport:SetAmbientLight( Color( 50, 50, 50 ) )
 				viewport:SetDirectionalLight( BOX_RIGHT, Color( 255, 255, 255 ) )
 				viewport:SetDirectionalLight( BOX_TOP, Color( 255, 255, 255 ) )
+				Holopad.ViewportLighting = "white"
 			end)
 			
 			submenu1:AddOption( "Shadowless", function()
 				viewport:resetRenderSettings()
 				viewport:SetAmbientLight( Color( 255, 255, 255 ) )
+				Holopad.ViewportLighting = "shadowless"
 			end)
 			
 			submenu1:AddOption( "Wireframe", function()
 				viewport:resetRenderSettings()
 				viewport:SetOverrideMaterial("models/wireframe")
+				Holopad.ViewportLighting = "wireframe"
 			end)
 		
 		
