@@ -70,6 +70,26 @@ function PANEL:Init()
 	self.exitStatus = false
 	self.exitEntity = nil
 	
+	self.modelhook = function(update)
+		if !self.list then ErrorNoHalt("List does not exist? what.") return end
+		if update.added then
+			local name	= update.ent:getName() or ""
+			local model	= update.ent:getModel() or "<Unknown?>"
+			local line	= self.list:AddLine(name != "" and name or "<Unnamed>", model:match("/([%a%d_]-)%.mdl$") or model, update.ent)
+			line.ent = update.ent
+		end
+		if update.removed then
+			for k, v in pairs(self.list:GetLines()) do
+				print(v.ent)
+				if v.ent == update.ent then
+					print("found!", v.ent, k)
+					self.list:RemoveLine(k)
+					break
+				end
+			end
+		end
+	end
+	
 end
 
 
@@ -99,16 +119,24 @@ end
 function PANEL:SetModelObj(mdl)
 	if !mdl then Error("Tried to set the ModelObj to nil! Naughty!") end
 	self.list:Clear()
+	
+	if self.modelobj then
+		hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.mdlobj), tostring(self))
+	end
+	
 	self.modelobj = model
 	
-	local name, model
+	local name, model, line
 	for _, v in ipairs(mdl:getAll()) do
 		if v:class() != Holopad.ClipPlane then
-			name = v:getName() or ""
-			model = v:getModel() or "<Unknown?>"
-			self.list:AddLine(name != "" and name or "<Unnamed>", model:match("/([%a%d_]-)%.mdl$") or model, v)
+			name	= v:getName() or ""
+			model	= v:getModel() or "<Unknown?>"
+			line	= self.list:AddLine(name != "" and name or "<Unnamed>", model:match("/([%a%d_]-)%.mdl$") or model, v)
+			line.ent = v
 		end
 	end
+	
+	hook.Add(Holopad.MODEL_UPDATE .. tostring(mdl), tostring(self), self.modelhook)
 end
 
 

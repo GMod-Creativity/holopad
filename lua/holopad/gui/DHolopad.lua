@@ -113,7 +113,7 @@ function PANEL:Init()
 																	end)
 	
 	local function selholo(success, holo)
-		if !(success or self.ModelObj) then return end
+		if !(success and self.ModelObj) then return end
 		if !holo then Error("Selected holo does not exist?!?!  Report this to Bubbus!") return end
 		self.ModelObj:selectEnt(holo, true)
 	end
