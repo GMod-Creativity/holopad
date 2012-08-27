@@ -6,17 +6,20 @@
 	| |  | | (_) | | (_) | |_) | (_| | (_| |
 	|_|  |_|\___/|_|\___/| .__/ \__,_|\__,_|
 	By Bubbus			 | | E2 I/O Library
-	splambob@gmail.com	 |_| 27/07/2012               
+	splambob@gmail.com	 |_| 26/08/2012               
 
 	Library of functions for saving to and loading from E2 code.
 	
 //*/
 
 
+include("holopad/serialize/lib_common.lua")
+
+
 Holopad.E2 = {}
 local lib = Holopad.E2
+local commons = Holopad.Serialize
 
-local SCALE = 1
 
 local ModelList = {
 	["models/holograms/hq_tube_thick.mdl"]		= "hq_tube_thick",
@@ -66,8 +69,141 @@ local ModelList = {
 }
 
 
-local maxHolos = ConVarExists("wire_holograms_burst_amount") and GetConVar("wire_holograms_burst_amount"):GetInt() or 0
 local tab = "    "	// a tab in the E2 file.  E2 files are soft tabbed IIRC.
+
+local header = 
+[[@name %s
+
+#####
+# Holograms authored by %s on %s
+# Exported from Holopad %s by Bubbus
+# Thanks to Vercas for the original E2 export template!
+##### 
+
+#####
+# Hologram spawning data
+@persist [Holos Clips]:table HolosSpawned HolosStep LastHolo TotalHolos
+#####
+
+#####
+# Self-awareness.
+@persist [This Owner]:entity
+#####
+
+]]
+
+local part1 = 
+[[if (first() | duped())
+{
+    This = entity()
+
+    function number addHolo(Pos:vector, Scale:vector, Colour:vector4, Angles:angle, Model:string, Material:string, Parent:number)
+    {
+        if (holoRemainingSpawns() < 1) {error("This model has too many holos to spawn! (" + TotalHolos + " holos!)"), return 0}
+        
+        holoCreate(LastHolo, This:toWorld(Pos), Scale, This:toWorld(Angles))
+        holoModel(LastHolo, Model)
+        holoMaterial(LastHolo, Material)
+        holoColor(LastHolo, vec(Colour), Colour:w())
+
+        if (Parent > 0) {holoParent(LastHolo, Parent)}
+        else {holoParent(LastHolo, This)}
+
+        local Key = LastHolo + "_"
+        local I=1
+        while (Clips:exists(Key + I))
+        {
+            holoClipEnabled(LastHolo, 1)
+            local ClipArr = Clips[Key+I, array]
+            holoClip(LastHolo, I, holoEntity(LastHolo):toLocal(This:toWorld(ClipArr[1, vector])), holoEntity(LastHolo):toLocalAxis(This:toWorldAxis(ClipArr[2, vector])), 0)
+            I++
+        }
+        
+        return LastHolo
+    }
+
+    ##########
+    # HOLOGRAMS
+    
+    # Hologram definitions
+]]
+	
+	
+local part2 = "    # Clip definitions"
+
+
+local part3 = 
+[[    
+    ##########
+    
+    TotalHolos = Holos:count()
+    if (%i > holoClipsAvailable()) {error("A holo has too many clips to spawn on this server! (Max is " + holoClipsAvailable() + ")")}
+}
+
+
+#You may place code here if it doesn't require all of the holograms to be spawned.
+
+
+if (HolosSpawned)
+{
+    #Your code goes here if it needs all of the holograms to be spawned!
+}
+else
+{
+    while (LastHolo <= Holos:count() & holoCanCreate() & perf())
+    {
+        local Ar = Holos[LastHolo, array]
+        addHolo(Ar[1, vector], Ar[2, vector], Ar[3, vector4], Ar[4, angle], Ar[5, string], Ar[6, string], Ar[7, number])
+        LastHolo++
+    }
+    
+    if (LastHolo > Holos:count())
+    {
+        Holos:clear()
+        Clips:clear()
+        HolosSpawned = 1
+        This:setAlpha(0)
+    }
+
+    interval(1000)
+}
+]]
+
+
+
+local function vecdef(vec)
+	return string.format("vec(%.4f, %.4f, %.4f)", vec.x, vec.y, vec.z)
+end
+
+local function coldef(col)
+	return string.format("vec4(%i, %i, %i, %i)", col.r, col.g, col.b, col.a)
+end
+
+local function angdef(ang)
+	return string.format("ang(%.4f, %.4f, %.4f)", ang.p, ang.y, ang.r)
+end
+
+local function holodef(num, pos, scale, col, ang, model, mat, parentno, name)
+	return string.format([[    #[ %s ]#    Holos[%i, array] = array(%s, %s, %s, %s, "%s", "%s", %s)]],
+			(name and name != "") and name or "Unnamed Holo",
+			num,
+			vecdef(pos),
+			vecdef(scale),
+			coldef(col),
+			angdef(ang),
+			ModelList[string.lower(model)] or model,
+			mat or "",
+			parentno or 0)
+end
+
+local function clipdef(parentno, num, pos, norm)
+	if !parentno or parentno < 1 then Error("Encountered orphaned ClipPlane during E2 generation!  Halting.\n") return end
+	return string.format([[        Clips["%i_%i", array] = array(%s, %s)]],
+			parentno,
+			num,
+			vecdef(pos),
+			vecdef(norm))
+end
 
 
 
@@ -81,11 +217,11 @@ local tab = "    "	// a tab in the E2 file.  E2 files are soft tabbed IIRC.
 		overwrite	Boolean
 			false to fail if file already exists, true to overwrite any existing file
  */
-function lib.Save( modelobj, filename, overwrite )
+function lib.Save( modelobj, filename, overwrite, options )
 	
 	local path = filename//"Expression2/" .. filename .. ".txt"
 	
-	if (!overwrite && file.Exists(path)) then Error("Unable to export to E2; \"" .. path .. "\" already exists!") return false end
+	if (!overwrite && file.Exists(path)) then Error("Unable to export to E2; \"" .. path .. "\" already exists!\n") return false end
 
 	print("saving to " .. path.. " in the DATA directory")
 	/*
@@ -94,17 +230,19 @@ function lib.Save( modelobj, filename, overwrite )
 	if !savefile then return false end
 	//*/
 	
-	local struct = lib.GetStructure(modelobj)
-	local towrite = lib.GetWriteToE2(struct)
+	local ordered	= commons.modelToList(modelobj)
+	local formatted	= commons.listToTables(ordered)
+
+	local e2 = lib.tablesToE2(formatted, options)
 	
-	if !towrite then
+	if !e2 then
 		Error("Unable to export to E2; error writing to file!")
 		return false
 	end
 	
 	//savefile:Close()
 	
-	file.Write(path, towrite)
+	file.Write(path, e2)
 
 	return true
 	
@@ -112,195 +250,106 @@ end
 
 
 
-/**
-	Convert a Model into a table of Holograms, ClipPlanes, and Hologram-to-ClipPlane dependencies.
-	Args;
-		modelobj	Hologram.Model
-			the Model to convert
-	Return: Table {holos, clips, clipparents}
-		the converted Model
- */
-function lib.GetStructure(modelobj)		//TODO: check for clip limit!
-
-	local ret = {holos = {}, clips = {}, clipparents = {}}
-	
-	for _, v in pairs(modelobj:getAll()) do
-		if 		v:class() == Holopad.Hologram 	then
-			ret.holos[#ret.holos+1] = v
-		elseif 	v:class() == Holopad.ClipPlane then
-			ret.clips[#ret.clips+1] = v
-			local parent = v:getParent()
-			if parent then
-				if !ret.clipparents[parent] then
-					ret.clipparents[parent] = {}
-				end
-				table.insert(ret.clipparents[parent], v)
-			else
-				Error("Unable to export to E2; encountered clip plane without a holo parent!")
-			end
-		end
-	end
-	
-	return ret
-
-end
-
-
-
-local header =
-"@name TEST\n\n## Modelled by %s, on %s\n## Exported from Holopad %s"
-
-local beginfirst =
-"\n\nif (first())\n{\n"..tab.."I=1\n"
-
-local endfirst =
-tab.."entity():setAlpha(0)\n}"
-
-local incholo = 
-"\n\n"..tab.."I++\n"
-
-local clipcomment =
-"\n\n"..tab..tab.."## Clips for %s\n\n"
-
-local clipsbegin =
-tab.."holoClipEnabled(I, 1)"
-
-local clipsbegin2 =
-tab..tab.."J=1\n"
-
-local nextclip =
-"\n\n"..tab..tab.."J++\n"
-
-
 
 /**
-	Given a table of holos, clips and holo-clip dependencies, write an E2 which describes them.
+	Takes a list of tables representing Entities and creates E2 code which represents those Entities.
+	Assumes that tables are ordered such that a child never appears before its parent.
+	// TODO: spawn non-holos as holos.
 	Args;
-		struct	Table {holos, clips, clipparents}
-			a table of holos, clips and holo-clip dependencies
-	Return: String
-		the resulting E2 code
+		tables	Table
+			list of tables representing Entities
+		options	Table
+			keyvalues which may affect the processng of the E2 code
+			current flags are scale:number, name:string, author:string, date:string, version:string
+	
  */
-function lib.GetWriteToE2(struct)
-
-	local holos = struct.holos
-	local clips = struct.clips
+function lib.tablesToE2(tables, options)
+	options = options or {}
+	
+	local uidmap, holoclipmap, hololist = lib.generateHoloMaps(tables)
+	
 	local ret = {}
 	ret.add = function(str) ret[#ret+1] = str end
 	
-	if maxHolos > 0 && #holos > maxHolos then
-		Error("Unable to export to E2; hologram-count > wire_holograms_burst_amount is not yet supported!")
-		return false
-	end
+	ret.add(string.format(header,
+							options.name or "Holopad Export",
+							options.author or "Unnamed",
+							options.date or os.date("%d/%m/%Y"),
+							options.version or Holopad.LAST_UPDATED))
+							
+	ret.add(part1)
 	
-	print("holos "..#holos)
-	print("clips "..#clips)
-
-	ret.add(header)	// TODO: string.format this
-
-	ret.add(beginfirst)
-	
-	for _, v in pairs(holos) do
-		lib.WriteHolo(ret, v)
+	local scale = options.scale or 1
+	local maxclips = 0
+	local listmap = {}
+	local cur, clips, clip, clipno
+	for i=1, #hololist do
+		cur = hololist[i]
+		listmap[cur] = i
+		ret.add(holodef(i, cur.pos*scale, cur.scale*scale, cur.colour, cur.ang, cur.model, cur.material, listmap[uidmap[cur.parent]], cur.name))
 		
-		if struct.clipparents[v] then
-			ret.add(clipsbegin)
-			ret.add(string.format(clipcomment, v:getName()))
-			ret.add(clipsbegin2)
-			for _, w in pairs(struct.clipparents[v]) do
-				lib.WriteClip(ret, w)
-				ret.add(nextclip)
+		clips = holoclipmap[cur]
+		if clips then
+			clipno = #clips
+			if clipno > maxclips then maxclips = clipno end
+			for j=1, clipno do
+				clip = clips[j]
+				ret.add(clipdef(listmap[uidmap[clip.parent]], j, clip.pos*scale, clip.normal))
 			end
-			ret.add("\n")
 		end
-		
-		ret.add(incholo)
 	end
-	
-	ret.add(endfirst)
 
+	ret.add(string.format(part3, maxclips))
+	
 	ret.add = nil
-	return table.concat(ret)
+	return table.concat(ret, "\n")
 end
 
 
 
-/**
-	Given a clipping plane, write E2 code which describes it.
-	Args;
-		ret	Table
-			the return-table to write partial code to.  must contain an add(String) function.
-		clip	Holopad.ClipPlane
-			the clipping plane to describe
-	Return: ret
-		the ret argument, which now has the clip serialization appended.
- */
-// holoClip(N,N,V,V,N) 		Holo Index, Clip Index, Position, Direction, isGlobal.
-// holoEntity(I):toLocal(...), isglobal = 0
-// TODO: odd defects in clip: clip normal wrong?
-function lib.WriteClip(ret, clip)
-
-	local nam = clip:getName()
-	//local mdl = string.lower(clip:getModel()) or Error("Unable to export to E2; a holo has an unsupported model!")
-	local pos = clip:getPos()*SCALE
-	local nrm = clip:getNormal()
-	print(nam.."\t"..tostring(nrm).."\t"..tostring(clip:getAng()))
-
-	ret.add(tab..tab.."## "..nam.."\n")
-	//savefile:Write(tab..tab..string.format("holoClip(I, J, holoEntity(I):toLocal(entity():toWorld(vec(%.3f, %.3f, %.3f))), holoEntity(I):toLocal(entity():toWorld(vec(%.3f, %.3f, %.3f))), 0)", 
-	ret.add(tab..tab..string.format("holoClip(I, J, holoEntity(I):toLocal(entity():toWorld(vec(%.6g, %.6g, %.6g))), holoEntity(I):toLocalAxis(entity():toWorldAxis(vec(%.6g, %.6g, %.6g))), 0)", 
-					pos.x, pos.y, pos.z,	// position
-					nrm.x, nrm.y, nrm.z))	// normal
-					
-	return ret
-
-end
-
-
 
 /**
-	Given a hologram, write E2 code which describes it.
+	Given a list of Entity representations in which no child is indexed lower than its parent, generate maps for use in generating E2 code for those Entities.
 	Args;
-		ret	Table
-			the return-table to write partial code to.  must contain an add(String) function.
-		clip	Holopad.Hologram
-			the clipping plane to describe
-	Return: ret
-		the ret argument, which now has the hologram serialization appended.
+		tables	Table
+			the list to use in map generation.
+	Returns;
+		uidmap	Table
+			maps uid -> enttable
+		holoclipmap	Table
+			maps Hologram -> ClipPlanes
+		hololist	Table
+			ordered list of Holograms only
  */
-function lib.WriteHolo(ret, holo)
+function lib.generateHoloMaps(tables)
+	local uidmap = {}
+	local holoclipmap = {}
+	local hololist = {}
 
-	local nam = holo:getName()
-	local mdl = ModelList[string.lower(holo:getModel())] or string.lower(holo:getModel()) // standard or holomodelany?
-	local pos = holo:getPos()*SCALE
-	local ang = holo:getAng()
-	local scl = holo:getScale()*SCALE
-	local col = holo:getColour()	
-	local mat = holo:getMaterial()
-	
-	ret.add(tab.."## "..nam.."\n")
-	ret.add(tab.."holoCreate(I)\n")
-	ret.add(tab.."holoModel(I, \""..mdl.."\")\n")
-	ret.add(tab..string.format("holoPos(I, entity():toWorld(vec(%.6g, %.6g, %.6g)))\n", pos.x, pos.y, pos.z))
-	ret.add(tab..string.format("holoAng(I, entity():toWorld(ang(%.6g, %.6g, %.6g)))\n", ang.p, ang.y, ang.r))
-	ret.add(tab..string.format("holoScale(I, vec(%.6g, %.6g, %.6g))\n", scl.x, scl.y, scl.z))
-	ret.add(tab..string.format("holoColor(I, vec(%i, %i, %i), %i)\n", col.r, col.g, col.b, col.a))
-	if mat && mat != "" then
-		ret.add(tab.."holoMaterial(I, \""..mat.."\")\n")
+	local cur, parmap
+	for i=1, #tables do
+		cur = tables[i]
+		uidmap[cur.uid] = cur
+		
+		if cur.type == "ClipPlane" then
+			if !cur.parent then ErrorNoHalt("Encountered ClipPlane without parent Hologram!  Ignoring...")
+			else
+				parmap = holoclipmap[uidmap[cur.parent]]
+				if !parmap then
+					parmap = {}
+					holoclipmap[uidmap[cur.parent]] = parmap
+				end
+				parmap[#parmap+1] = cur
+			end
+		elseif cur.type == "Hologram" then
+			hololist[#hololist+1] = cur
+		else
+			ErrorNoHalt("Encountered a(n) " .. cur.type .. "!  Ignoring...")
+		end
 	end
-	// TODO: parent heirarchy
-	ret.add(tab.."holoParent(I, entity())\n")
 
-	
-	return ret
+	return uidmap, holoclipmap, hololist
 end
 
 
 
-function lib.Load(filepath)
-	
-	// TODO: this
-	Error("E2 importing is not supported yet!")
-	return false
-	
-end
