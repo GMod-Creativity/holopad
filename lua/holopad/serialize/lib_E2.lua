@@ -83,11 +83,7 @@ local header =
 #####
 # Hologram spawning data
 @persist [Holos Clips]:table HolosSpawned HolosStep LastHolo TotalHolos
-#####
-
-#####
-# Self-awareness.
-@persist [This Owner]:entity
+@persist E:entity
 #####
 
 ]]
@@ -95,19 +91,19 @@ local header =
 local part1 = 
 [[if (first() | duped())
 {
-    This = entity()
+    E = entity()
 
     function number addHolo(Pos:vector, Scale:vector, Colour:vector4, Angles:angle, Model:string, Material:string, Parent:number)
     {
         if (holoRemainingSpawns() < 1) {error("This model has too many holos to spawn! (" + TotalHolos + " holos!)"), return 0}
         
-        holoCreate(LastHolo, This:toWorld(Pos), Scale, This:toWorld(Angles))
+        holoCreate(LastHolo, E:toWorld(Pos), Scale, E:toWorld(Angles))
         holoModel(LastHolo, Model)
         holoMaterial(LastHolo, Material)
         holoColor(LastHolo, vec(Colour), Colour:w())
 
         if (Parent > 0) {holoParent(LastHolo, Parent)}
-        else {holoParent(LastHolo, This)}
+        else {holoParent(LastHolo, E)}
 
         local Key = LastHolo + "_"
         local I=1
@@ -115,7 +111,7 @@ local part1 =
         {
             holoClipEnabled(LastHolo, 1)
             local ClipArr = Clips[Key+I, array]
-            holoClip(LastHolo, I, holoEntity(LastHolo):toLocal(This:toWorld(ClipArr[1, vector])), holoEntity(LastHolo):toLocalAxis(This:toWorldAxis(ClipArr[2, vector])), 0)
+            holoClip(LastHolo, I, holoEntity(LastHolo):toLocal(E:toWorld(ClipArr[1, vector])), holoEntity(LastHolo):toLocalAxis(E:toWorldAxis(ClipArr[2, vector])), 0)
             I++
         }
         
@@ -125,7 +121,6 @@ local part1 =
     ##########
     # HOLOGRAMS
     
-    # Hologram definitions
 ]]
 	
 	
@@ -162,7 +157,7 @@ else
         Holos:clear()
         Clips:clear()
         HolosSpawned = 1
-        This:setAlpha(0)
+        E:setAlpha(0)
     }
 
     interval(1000)
@@ -185,7 +180,7 @@ end
 
 local function holodef(num, pos, scale, col, ang, model, mat, parentno, name)
 	return string.format([[    #[ %s ]#    Holos[%i, array] = array(%s, %s, %s, %s, "%s", "%s", %s)]],
-			(name and name != "") and name or "Unnamed Holo",
+			(name and name != "") and name or "    ",
 			num,
 			vecdef(pos),
 			vecdef(scale),
@@ -344,7 +339,7 @@ function lib.generateHoloMaps(tables)
 		elseif cur.type == "Hologram" then
 			hololist[#hololist+1] = cur
 		else
-			ErrorNoHalt("Encountered a(n) " .. cur.type .. "!  Ignoring...")
+			ErrorNoHalt("Encountered a(n) " .. cur.type or "unknown" .. "!  Ignoring...")
 		end
 	end
 

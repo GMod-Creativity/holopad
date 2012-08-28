@@ -13,6 +13,7 @@
 print("Including holopad/serialize")
 
 include("holopad/serialize/lib_E2.lua")
+include("holopad/serialize/lib_E2old.lua")
 include("holopad/serialize/lib_PRJ.lua")
 include("holopad/serialize/lib_persist.lua")
 

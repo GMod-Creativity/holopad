@@ -16,6 +16,7 @@ include("holopad/gui/DBackground_Holopad.lua")
 include("holopad/gui/DCentredImageButton.lua")
 include("holopad/gui/DViewPanel_Holopad.lua")
 include("holopad/gui/DFileDialogue_Holopad.lua")
+include("holopad/gui/DE2ExportDialogue_Holopad.lua")
 include("holopad/gui/DCreateHoloMenu_Holopad.lua")
 include("holopad/gui/DContextPanel_MoveMode_Holopad.lua")
 include("holopad/gui/DContextPanel_RotateMode_Holopad.lua")
@@ -87,10 +88,17 @@ function PANEL:Init()
 	
 	self:addButton("holopad/export", 	"Export to E2...", 			function()
 																		if self.fileDialogue then Error("A file dialogue is already open.  Please use it or close it ok thanks!") return end
-																		self.fileDialogue = vgui.Create("DFileDialogue_Holopad", self)
+																		self.fileDialogue = vgui.Create("DE2ExportDialogue_Holopad", self)
 																		self.fileDialogue:SetRootFolder("Expression2")
 																		self.fileDialogue:SetTitle("Holopad 2; Export to E2")
-																		self.fileDialogue:SetCallback(function(success, filepath) self.fileDialogue = nil if success then Holopad.E2.Save( self:GetModelObj(), filepath, true ) end end)
+																		self.fileDialogue:SetCallback(	function(success, filepath, old)
+																											self.fileDialogue = nil
+																											if success then
+																												print("old =", old and "true" or "false")
+																												exporter = old and Holopad.E2old or Holopad.E2
+																												exporter.Save( self:GetModelObj(), filepath, true )
+																											end
+																										end)
 																	end)
 	self:placeSpacer()
 	// TODO: create holo menu (and button picture)
