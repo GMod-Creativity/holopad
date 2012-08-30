@@ -72,7 +72,7 @@ end
 	Return: Boolean (false)
  */
 function this:setParent(ent)
-	ErrorNoHalt("WARNING: Parenting ClipPlane to a new Hologram;", self, "(if you did NOT just spawn or load a ClipPlane, this is an ERROR!)\n")
+	//ErrorNoHalt("WARNING: Parenting ClipPlane to a new Hologram;", self, "(if you did NOT just spawn or load a ClipPlane, this is an ERROR!)\n")
 	this:super().setParent(self, ent)
 end
 
@@ -84,7 +84,7 @@ end
  */
 function this:deparent()
 	if !self:getParent() then return end
-	ErrorNoHalt("WARNING: Deparenting ClipPlane from Hologram;", self, "(if you did NOT just delete a ClipPlane, this is an ERROR!)\n")
+	//ErrorNoHalt("WARNING: Deparenting ClipPlane from Hologram;", self, "(if you did NOT just delete a ClipPlane, this is an ERROR!)\n")
 	this:super().deparent(self)
 end
  

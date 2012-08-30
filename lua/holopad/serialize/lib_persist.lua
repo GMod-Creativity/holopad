@@ -86,7 +86,7 @@ function lib.Persist()
 				Msg("Error adding " .. name .. " to Persistence file (encountered non-table).  Skipping...")
 				failed = true
 				break
-			elseif cur[exp[i]] then
+			elseif cur[exp[i]] != nil then
 				cur = cur[exp[i]]
 			else
 				Msg("Error adding " .. name .. " to Persistence file (could not find).  Skipping...")
@@ -97,7 +97,6 @@ function lib.Persist()
 		
 		if !failed then
 			vals[name] = cur
-			//Msg(name, "\t=\t", cur, "\n")
 		end
 	end
 	

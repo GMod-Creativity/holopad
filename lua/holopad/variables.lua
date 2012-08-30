@@ -29,6 +29,8 @@ Holopad.AutosaveMax = 6
 Holopad.AutosaveCurrent = 1 
 // How long should Holopad wait between autosaves?  Time in seconds.
 Holopad.AutosaveWait = 180	// 3 minutes
+// Should we autosave upon closing?
+Holopad.AutosaveOnClose = true
 
 // Grid settings
 Holopad.GridSize = Holopad.DEFAULT_GRIDSIZE or 12

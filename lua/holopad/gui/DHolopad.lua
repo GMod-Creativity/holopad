@@ -17,6 +17,7 @@ include("holopad/gui/DCentredImageButton.lua")
 include("holopad/gui/DViewPanel_Holopad.lua")
 include("holopad/gui/DFileDialogue_Holopad.lua")
 include("holopad/gui/DE2ExportDialogue_Holopad.lua")
+include("holopad/gui/DSaveOptionsDialogue_Holopad.lua")
 include("holopad/gui/DCreateHoloMenu_Holopad.lua")
 include("holopad/gui/DContextPanel_MoveMode_Holopad.lua")
 include("holopad/gui/DContextPanel_RotateMode_Holopad.lua")
@@ -61,13 +62,27 @@ function PANEL:Init()
 	
 	self.ModelObj = Holopad.Model:New()
 	
-	self:addButton("holopad/save", 		"Save to Project File...",	function()
+	local savebutton = self:addButton("holopad/save", 		"Save to Project File...",	function()
 																		if self.fileDialogue then Error("A file dialogue is already open.  Please use it or close it ok thanks!") return end
 																		self.fileDialogue = vgui.Create("DFileDialogue_Holopad", self)
 																		self.fileDialogue:SetRootFolder("Holopad", true)
 																		self.fileDialogue:SetTitle("Holopad 2; Save to PRJ")
 																		self.fileDialogue:SetCallback(function(success, filepath) self.fileDialogue = nil if success then Holopad.PRJ.Save( self:GetModelObj(), filepath, true ) end end)
 																	end)
+																	
+	local savemenubutton = vgui.Create( "DCentredImageButton", savebutton )
+	savemenubutton:SetSize( 18, 18 )
+	savemenubutton:SetText("")
+	savemenubutton:SetImage("gui/silkicons/application_view_detail")
+	savemenubutton:SetTooltip( "Set Save Options" )
+	savemenubutton.OnMousePressed =	function()
+										if !self.ModelObj then Error("No ModelObj exists, cannot create selection list.") return end
+										local menu = vgui.Create("DSaveOptionsDialogue_Holopad", self)
+									end
+	savemenubutton:SetDrawBorder( true )
+    savemenubutton:SetDrawBackground( true )
+	savemenubutton:SetPos(savebutton:GetWide() - savemenubutton:GetWide(), 0)
+	
 																	
 	self:addButton("holopad/load", 		"Load a Project File...", 	function()
 																		if self.fileDialogue then Error("A file dialogue is already open.  Please use it or close it ok thanks!") return end
@@ -186,7 +201,13 @@ function PANEL:Init()
 	
 	local oldclose = self.Close
 	
-	self.Close = function(self) self.closed = true Holopad.PRJ.Save( self:GetModelObj(), Holopad.AUTOSAVE_DIR .. "/autosave_onclose.txt", true ) oldclose(self) end
+	self.Close =	function(self)
+						self.closed = true
+						if Holopad.AutosaveOnClose then
+							Holopad.PRJ.Save( self:GetModelObj(), Holopad.AUTOSAVE_DIR .. "/autosave_onclose.txt", true )
+						end
+						oldclose(self)
+					end
 	
 	timer.Create(Holopad.AUTOSAVE_TIMER, Holopad.AutosaveWait, 0, autosave, self)
 	

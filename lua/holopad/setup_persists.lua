@@ -12,6 +12,10 @@
 	
 //*/
 
+
+// TODO: this in table form
+
+
 if Holopad.Persist then
 
 	Holopad.Persist.Retrieve()
@@ -36,9 +40,17 @@ if Holopad.Persist then
 	end
 
 
-	// Current autosave number
+	// Autosave settings
 	if !Holopad.Persist.IsRegistered("Holopad.AutosaveCurrent") then
 		Holopad.Persist.RegisterGlobal("Holopad.AutosaveCurrent")
+	end
+	
+	if !Holopad.Persist.IsRegistered("Holopad.AutosaveOnClose") then
+		Holopad.Persist.RegisterGlobal("Holopad.AutosaveOnClose")
+	end
+	
+	if !Holopad.Persist.IsRegistered("Holopad.AutosaveMax") then
+		Holopad.Persist.RegisterGlobal("Holopad.AutosaveMax")
 	end
 	
 	

@@ -78,6 +78,8 @@ local header =
 # Holograms authored by %s on %s
 # Exported from Holopad %s by Bubbus
 # Thanks to Vercas for the original E2 export template!
+#
+# FOR AN EXPLANATION OF THE CODE BELOW, VISIT http://code.google.com/p/holopad/wiki/NewE2ExportFormatHOWTO
 ##### 
 
 #####
@@ -180,10 +182,10 @@ end
 
 local function holodef(num, pos, scale, col, ang, model, mat, parentno, name)
 	return string.format([[    #[ %s ]#    Holos[%i, array] = array(%s, %s, %s, %s, "%s", "%s", %s)]],
-			(name and name != "") and name or "    ",
+			(name and name != "") and name or " ",
 			num,
 			vecdef(pos),
-			vecdef(scale),
+			vecdef(scale or Vector(1, 1, 1)),
 			coldef(col),
 			angdef(ang),
 			ModelList[string.lower(model)] or model,
@@ -211,6 +213,9 @@ end
 			the file name to save to, NOT the file PATH
 		overwrite	Boolean
 			false to fail if file already exists, true to overwrite any existing file
+		options	Table
+			list of option keyvalues which may affect the processng of the E2 code
+			current flags are scale:number, name:string, author:string, date:string, version:string
  */
 function lib.Save( modelobj, filename, overwrite, options )
 	
@@ -255,8 +260,8 @@ end
 			list of tables representing Entities
 		options	Table
 			keyvalues which may affect the processng of the E2 code
-			current flags are scale:number, name:string, author:string, date:string, version:string
-	
+	Return; String
+		the resulting E2 code
  */
 function lib.tablesToE2(tables, options)
 	options = options or {}
