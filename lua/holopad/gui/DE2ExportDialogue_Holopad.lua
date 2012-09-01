@@ -24,7 +24,7 @@ function PANEL:Init()
 	self:ShowCloseButton(true)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 300, 302
+	self.ContentX, self.ContentY	= 300, 335
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	//self.ControlType = "camera"
@@ -53,19 +53,81 @@ function PANEL:Init()
 	self.checkOverwrite:SetValue( 0 )
 	self.checkOverwrite:SizeToContents()
 	
-	self.checkOldE2 = vgui.Create( "DCheckBoxLabel", self )
-	self.checkOldE2:SetPos( self.PaddingX + 10 + self.checkOverwrite:GetWide(), self.PaddingY + self.TopBarHeight + 240 + self.fileLabel:GetTall() )
-	self.checkOldE2:SetText( "Use old exporter?" )
-	self.checkOldE2:SetValue( 0 )
-	self.checkOldE2:SizeToContents()
+	local ypos = self.PaddingY + self.TopBarHeight + 250 + self.fileLabel:GetTall() + self.checkOverwrite:GetTall()
 	
 	self.doneButton = vgui.Create("DButton", self)
 	self.doneButton:SetText( "Done!" )
 	self.doneButton.DoClick = function() self:doneButtonClicked() end
 	self.doneButton:SetSize(self.ContentX - 10, 20)
-	self.doneButton:SetPos(self.PaddingX + 5, self.PaddingY + self.TopBarHeight + 250 + self.fileLabel:GetTall() + self.checkOverwrite:GetTall())
+	self.doneButton:SetPos(self.PaddingX + 5, ypos)
 	
-	self:SetTitle("Holopad 2; File Dialogue")
+	
+	local categoryList = vgui.Create( "DPanelList" )
+	categoryList:SetAutoSize( true )
+	categoryList:SetSpacing( 5 )
+	categoryList:EnableHorizontal( false )
+	categoryList:EnableVerticalScrollbar( false )
+	
+	local category = vgui.Create("DCollapsibleCategory", self)
+	category:SetSize( self.ContentX, self.ContentY )
+	category:SetPos(self.PaddingX, ypos + 30)
+	category:SetExpanded( 0 )
+	category:SetLabel( "Additional Options" )
+	//category.Header:SetMouseInputEnabled(false)
+	category:SetContents(categoryList)
+	category:SetTall(self.ContentY)
+	self.category = category
+	
+	
+	local addpanel = vgui.Create("DPanel")
+	addpanel.Paint = function() end
+	
+	local ypos2 = 5
+	
+	local exporterlabel = vgui.Create("DLabel", addpanel)
+	exporterlabel:SetText("Choose an Exporter:")
+	exporterlabel:SizeToContents()
+	exporterlabel:SetPos(5, ypos2)
+	
+	ypos2 = ypos2 + exporterlabel:GetTall() + 5
+	
+	local exporterlist= vgui.Create( "DMultiChoice", addpanel)
+	exporterlist:SetPos(5, ypos2)
+	exporterlist:SetSize( 270, 20 )
+	exporterlist:AddChoice("Export 2 (Spawn by loop, arrays, unlimited)", "E2")
+	exporterlist:AddChoice("Old Export (Basic spawn code, limited)", "E2old")
+	exporterlist.OnSelect = function(self, i, str, val) self.SelectedExporter = val end
+	self.exporterlist = exporterlist
+	
+	ypos2 = ypos2 + 30
+	
+	local scalelabel = vgui.Create("DLabel", addpanel)
+	scalelabel:SetText("Scale Modifier: ")
+	scalelabel:SizeToContents()
+	scalelabel:SetPos(5, ypos2+3)
+	
+	local scalewang = vgui.Create("DNumberWang", addpanel)
+	scalewang:SetValue(1)
+	scalewang:SetMax(100)
+	scalewang:SetMin(0.1)
+	scalewang:SetPos(5 + scalelabel:GetWide(), ypos2)
+	scalewang:SetDecimals(2)
+	self.scalewang = scalewang
+	
+	ypos2 = ypos2 + scalewang:GetTall() + 5
+	/*
+	fileEntry = vgui.Create("DTextEntry", addpanel)
+	self.fileEntry:SetWidth(self.ContentX - 10)
+	self.fileEntry:SetPos(self.PaddingX + 5, self.PaddingY + self.TopBarHeight + 215 + self.fileLabel:GetTall())
+	//*/
+	
+	addpanel:SizeToContents()
+	addpanel:SetTall(ypos2)
+	
+	categoryList:AddItem(addpanel)
+	
+	
+	self:SetTitle("Holopad 2; Export to E2")
 	local parent	 = self:GetParent()
 	local pwidth	 = parent:GetWide()
 	local parx, pary = parent:GetPos()
@@ -77,17 +139,44 @@ function PANEL:Init()
 	
 	local oldclose = self.Close
 	
+	local closefunc =	function(success, filepath)
+							if success then
+								exporter = Holopad[self.exporterlist.SelectedExporter or "E2"]
+								local options = {author = LocalPlayer():Nick(), scale = self.scalewang:GetValue()}
+								exporter.Save( self.mdlobj, filepath, true, options )
+							end
+						end
+	
 	self.Close = 	function(self)
 						local callback, status, path = self.callback, self.exitStatus, self.exitFilepath
+						closefunc(status, path)
 						oldclose(self)
 						if callback then
-							callback(status, path, self.checkOldE2:GetChecked())
+							callback(status, path)
 						end
 					end
 					
 	self.exitStatus = false
 	self.exitFilepath = nil
 	
+	self.btnClose:SetPos(self.WindowX - self.btnClose:GetWide() + 19, 1)
+	self.lblTitle:SizeToContents()
+	self.lblTitle:SetPos(8, 5)
+	
+end
+
+
+
+
+function PANEL:SetModelObj(mdl)
+	self.mdlobj = mdl
+end
+
+
+
+
+function PANEL:PerformLayout()
+	self:SetTall(self.ContentY + self.category:GetTall())
 end
 
 

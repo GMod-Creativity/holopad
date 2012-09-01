@@ -105,15 +105,8 @@ function PANEL:Init()
 																		if self.fileDialogue then Error("A file dialogue is already open.  Please use it or close it ok thanks!") return end
 																		self.fileDialogue = vgui.Create("DE2ExportDialogue_Holopad", self)
 																		self.fileDialogue:SetRootFolder("Expression2")
-																		self.fileDialogue:SetTitle("Holopad 2; Export to E2")
-																		self.fileDialogue:SetCallback(	function(success, filepath, old)
-																											self.fileDialogue = nil
-																											if success then
-																												print("old =", old and "true" or "false")
-																												exporter = old and Holopad.E2old or Holopad.E2
-																												exporter.Save( self:GetModelObj(), filepath, true )
-																											end
-																										end)
+																		self.fileDialogue:SetModelObj(self.ModelObj)
+																		self.fileDialogue:SetCallback(function(success, path) self.fileDialogue = nil end)
 																	end)
 	self:placeSpacer()
 	// TODO: create holo menu (and button picture)

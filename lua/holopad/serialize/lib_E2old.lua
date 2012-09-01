@@ -81,7 +81,7 @@ local tab = "    "	// a tab in the E2 file.  E2 files are soft tabbed IIRC.
 		overwrite	Boolean
 			false to fail if file already exists, true to overwrite any existing file
  */
-function lib.Save( modelobj, filename, overwrite )
+function lib.Save( modelobj, filename, overwrite, options )
 	
 	local path = filename//"Expression2/" .. filename .. ".txt"
 	
@@ -95,7 +95,7 @@ function lib.Save( modelobj, filename, overwrite )
 	//*/
 	
 	local struct = lib.GetStructure(modelobj)
-	local towrite = lib.GetWriteToE2(struct)
+	local towrite = lib.GetWriteToE2(struct, options)
 	
 	if !towrite then
 		Error("Unable to export to E2; error writing to file!")
@@ -148,7 +148,7 @@ end
 
 
 local header =
-"@name TEST\n\n## Modelled by %s, on %s\n## Exported from Holopad %s"
+"@name %s\n\n## Modelled by %s, on %s\n## Exported from Holopad %s"
 
 local beginfirst =
 "\n\nif (first())\n{\n"..tab.."I=1\n"
@@ -181,11 +181,12 @@ local nextclip =
 	Return: String
 		the resulting E2 code
  */
-function lib.GetWriteToE2(struct)
+function lib.GetWriteToE2(struct, options)
 
 	local holos = struct.holos
 	local clips = struct.clips
 	local ret = {}
+	local scale = options.scale or 1
 	ret.add = function(str) ret[#ret+1] = str end
 	
 	if maxHolos > 0 && #holos > maxHolos then
@@ -196,19 +197,23 @@ function lib.GetWriteToE2(struct)
 	print("holos "..#holos)
 	print("clips "..#clips)
 
-	ret.add(header)	// TODO: string.format this
+	ret.add(string.format(header,
+							options.name or "Holopad Export",
+							options.author or "Unnamed",
+							options.date or os.date("%d/%m/%Y"),
+							options.version or Holopad.LAST_UPDATED))
 
 	ret.add(beginfirst)
 	
 	for _, v in pairs(holos) do
-		lib.WriteHolo(ret, v)
+		lib.WriteHolo(ret, v, scale)
 		
 		if struct.clipparents[v] then
 			ret.add(clipsbegin)
 			ret.add(string.format(clipcomment, v:getName()))
 			ret.add(clipsbegin2)
 			for _, w in pairs(struct.clipparents[v]) do
-				lib.WriteClip(ret, w)
+				lib.WriteClip(ret, w, scale)
 				ret.add(nextclip)
 			end
 			ret.add("\n")
@@ -238,11 +243,11 @@ end
 // holoClip(N,N,V,V,N) 		Holo Index, Clip Index, Position, Direction, isGlobal.
 // holoEntity(I):toLocal(...), isglobal = 0
 // TODO: odd defects in clip: clip normal wrong?
-function lib.WriteClip(ret, clip)
+function lib.WriteClip(ret, clip, scale)
 
 	local nam = clip:getName()
 	//local mdl = string.lower(clip:getModel()) or Error("Unable to export to E2; a holo has an unsupported model!")
-	local pos = clip:getPos()*SCALE
+	local pos = clip:getPos()*scale
 	local nrm = clip:getNormal()
 	print(nam.."\t"..tostring(nrm).."\t"..tostring(clip:getAng()))
 
@@ -268,13 +273,13 @@ end
 	Return: ret
 		the ret argument, which now has the hologram serialization appended.
  */
-function lib.WriteHolo(ret, holo)
+function lib.WriteHolo(ret, holo, scale)
 
 	local nam = holo:getName()
 	local mdl = ModelList[string.lower(holo:getModel())] or string.lower(holo:getModel()) // standard or holomodelany?
-	local pos = holo:getPos()*SCALE
+	local pos = holo:getPos()*scale
 	local ang = holo:getAng()
-	local scl = holo:getScale()*SCALE
+	local scl = holo:getScale()*scale
 	local col = holo:getColour()	
 	local mat = holo:getMaterial()
 	
