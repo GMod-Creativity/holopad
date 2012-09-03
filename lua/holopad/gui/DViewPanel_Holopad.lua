@@ -29,7 +29,10 @@ AccessorFunc( PANEL, "showStats",		"ShowStats" )
 function PANEL:Init()	
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 600, 600
+	local sx, sy = ScrW(), ScrH()
+	sx = math.min(sx, sy)
+	self.ContentX = 600 > sx and sx or 600
+	self.ContentY = self.ContentX
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	//window init//
@@ -83,6 +86,14 @@ function PANEL:Init()
 			self.ModelObj:deselectEnt(upd.ent)
 		end
 	end
+	
+	local x, y = self:GetPos()
+	local sx, sy = ScrW(), ScrH()
+	if y < 0 then y = 0 end
+	if y > sy - self.WindowY then y = sx - self.WindowX end
+	if x < 0 then x = 0 end
+	if x > sx - self.WindowX then x = sx - self.WindowX end
+	self:SetPos(x, y)
 	
 end
 

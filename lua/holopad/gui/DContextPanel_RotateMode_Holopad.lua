@@ -61,6 +61,14 @@ function PANEL:Init()
 		self.receiveUpdate(update)
 	end
 	
+	local x, y = self:GetPos()
+	local sx, sy = ScrW(), ScrH()
+	if y < 0 then y = 0 end
+	if y > sy - self.WindowY then y = sx - self.WindowX end
+	if x < 0 then x = 0 end
+	if x > sx - self.WindowX then x = sx - self.WindowX end
+	self:SetPos(x, y)
+	
 end
 
 
