@@ -44,30 +44,6 @@ end
 
 
 
-local function getSnapValue(num)
-	// TODO: rounding instead of flooring
-	if num > 20  then return math.Clamp(num - (num % 5),    20,   50  ) end
-	if num > 10  then return math.Clamp(num - (num % 1),    10,   20  ) end
-	if num > 1   then return math.Clamp(num - (num % 0.5),  1,    20  ) end
-	if num > 0   then return math.Clamp(num - (num % 0.1),  0.1,  1   ) end
-	Error("Tried to invoke roundToSnap on a negative number!")
-end
-
-local function roundWith(num, round)
-	local abs = math.abs(num)
-	local mod = abs % round
-	if mod < round/2 then return (abs - mod)*(num/abs), -mod*(num/abs) end
-	return (abs + (round - mod))*(num/abs), (round - mod)*(num/abs)
-end
-
-local function roundToSnap(vec, snap)
-	local ret = Vector()
-	ret.x = roundWith(vec.x, snap)
-	ret.y = roundWith(vec.y, snap)
-	ret.z = roundWith(vec.z, snap)
-	return ret
-end
-
 function this:doSnap(pass, lpos)
 	// TODO: snap local to dongles
 	
@@ -81,11 +57,11 @@ function this:doSnap(pass, lpos)
 		//dist = getSnapValue(dist/800)	//TODO: snap grid value based on context control panel
 		
 		if		self.DragDir == DRAGDIR_FOR then
-			pos.x = roundWith(pos.x, dist)
+			pos.x = math.Round(pos.x/dist)*dist
 		elseif	self.DragDir == DRAGDIR_RT  then
-			pos.y = roundWith(pos.y, dist)
+			pos.y = math.Round(pos.y/dist)*dist
 		elseif	self.DragDir == DRAGDIR_UP  then
-			pos.z = roundWith(pos.z, dist)
+			pos.z = math.Round(pos.z/dist)*dist
 		end
 		
 		//pos = roundToSnap(pos, dist)

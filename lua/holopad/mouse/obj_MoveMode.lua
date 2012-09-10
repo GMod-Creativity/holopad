@@ -73,15 +73,6 @@ end
 
 
 
-
-local function roundToSnap(vec, snap)
-	local ret = Vector()
-	ret.x = roundWith(vec.x, snap)
-	ret.y = roundWith(vec.y, snap)
-	ret.z = roundWith(vec.z, snap)
-	return ret
-end
-
 /**
 	Handle a left mouse button release
 	Args;

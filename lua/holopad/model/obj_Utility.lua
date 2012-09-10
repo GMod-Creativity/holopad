@@ -14,7 +14,7 @@
 
 
 
-Holopad.Utility, Holopad.UtilityMeta = Holopad.inheritsFrom(nil)
+Holopad.Utility, Holopad.UtilityMeta = Holopad.inheritsFrom(Holopad.Hologram)
 local this, meta = Holopad.Utility, Holopad.UtilityMeta
 
 
@@ -31,73 +31,12 @@ local this, meta = Holopad.Utility, Holopad.UtilityMeta
  */
 function this:New(pos, ang, name)
 
-	local new =
-	{ 
-		pos 		= pos or Vector(0,0,0),
-		ang 		= ang or Angle(0,0,0),
-		name 		= name or ""
-	}
+	local new = this:super():New(pos, ang, name, model, colour, material)
 	
 	setmetatable(new, meta)
+	new.exportable = false
+	
 	return new
 
 end
-
-
-
-/**
-	Return the position of the utility
-	Args;
-		returnref	Boolean
-			true for pos vector by reference else copy of pos vector
-	Return:	Vector
- */
-function this:getPos(returnref)
-	return returnref and self.pos or Vector(self.pos.x, self.pos.y, self.pos.z)
-end
-
-
-
-/**
-	Return the angles of the utility
-	Args;
-		returnref	Boolean
-			true for angle by reference else copy of angle
-	Return:	Angle
- */
-function this:getAng(returnref)
-	return returnref and self.ang or Angle(self.ang.p, self.ang.y, self.ang.r)
-end
-
-
-
-/**
-	Return the name of the utility.
-	Return:	String
- */
-function this:getName()
-	return self.name
-end
-
-
-
-/**
-	Sets the name of the utility to the parameter
-	Args;
-		name	String
- */
-function this:setName(name)
-	self.name = name
-end
-
-
-
-/**
-	Return: Holopad.Utility
-		a copy of this Utility
- */
-function this:clone()
-	return this:New(self:getPos(), self:getAng(), self:getName())
-end
-
 

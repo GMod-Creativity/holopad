@@ -13,7 +13,7 @@
 //*/
 
 // Hopefully I remember to update this, cba to automate.
-Holopad.LAST_UPDATED	= "03/09/2012 (BETA 5.6)"
+Holopad.LAST_UPDATED	= "10/09/2012 (BETA 5.6.1)"
 Holopad.LODSA_HURRS		=
 {
 	"if a holo gotta attitude",

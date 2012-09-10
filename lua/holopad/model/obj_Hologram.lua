@@ -47,6 +47,7 @@ function this:New(pos, ang, name, model, colour, material, scale)
 	
 	new:setupParentUpdates()
 	new.scale = scale or Vector(1, 1, 1)
+	new.exportable = true
 	
 	return new
 
@@ -90,8 +91,9 @@ end
 	Required because hook library doesn't support OOP (afaik)
  */
 function this:setupParentUpdates()
-	//this:super().setupParentUpdates(self)
+	this:super().setupParentUpdates(self)
 	
+	/*
 	// TODO: convert to function table
 	self.parentUpdate = function(ent, update)
 		if update.pos then
@@ -123,6 +125,7 @@ function this:setupParentUpdates()
 			end
 		end
 	end
+	//*/
 end
 
 

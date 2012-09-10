@@ -274,9 +274,12 @@ function this:setupParentUpdates()
 		if update.scale then
 			local entang, entpos = ent:getAng(), ent:getPos()
 			local localpos, lang = WorldToLocal(self.pos, self.ang, entpos, entang)
-			local scaledelta = update.scale - update.scalebefore
-			local div = Vector(scaledelta.x/update.scale.x, scaledelta.y/update.scale.y, scaledelta.z/update.scale.z) // WTF?
-			localpos = localpos + localpos * div
+			
+			//TODO: Y U NO WORK?
+			//localpos = (localpos / update.scalebefore) * update.scale
+			local lp, sb, sa = localpos, update.scalebefore, update.scale
+			localpos = Vector((lp.x / sb.x) * sa.x, (lp.y / sb.y) * sa.y, (lp.z / sb.z) * sa.z)
+			
 			self:setPos(LocalToWorld(localpos, self.ang, entpos, entang))
 		end
 	end

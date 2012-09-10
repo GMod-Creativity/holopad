@@ -137,7 +137,9 @@ function lib.modelToList(modelobj)
 	local all = modelobj:getAll()
 
 	for k, v in pairs(all) do	// generate parent tree
-		lib.addToTree(parenttree, v)
+		if v.exportable then	// TODO: guarantee that non-exportables don't get exported due to exportable child
+			lib.addToTree(parenttree, v)
+		end
 	end
 	
 	local ret, agenda = {}, {}

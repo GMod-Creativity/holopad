@@ -48,11 +48,7 @@ function PANEL:Init()
 	
 	
 	self:SetTitle("Holopad 2; Entity Dialogue")
-	local parent	 = self:GetParent()
-	local pwidth	 = parent:GetWide()
-	local parx, pary = parent:GetPos()
-	self:SetPos(parx + pwidth/2 - self.WindowX/2, pary)
-	self:MoveBelow(parent, 1)
+	self:Center()
 	
 	self:MakePopup()
 	
@@ -61,6 +57,7 @@ function PANEL:Init()
 	
 	self.Close = 	function(self)
 						local callback, status, path = self.callback, self.exitStatus, self.exitEntity
+						hook.Remove(Holopad.MODEL_UPDATE .. tostring(mdl))
 						oldclose(self)
 						if callback then
 							callback(status, path)
