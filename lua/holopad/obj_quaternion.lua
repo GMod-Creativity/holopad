@@ -439,7 +439,6 @@ end
 
 /******************************************************************************/
 
-__e2setcost(4)
 
 --- Returns absolute value of <q>
 function Quat.abs(q)
