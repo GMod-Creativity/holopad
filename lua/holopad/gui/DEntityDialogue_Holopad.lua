@@ -57,7 +57,8 @@ function PANEL:Init()
 	
 	self.Close = 	function(self)
 						local callback, status, path = self.callback, self.exitStatus, self.exitEntity
-						hook.Remove(Holopad.MODEL_UPDATE .. tostring(mdl))
+						print("close", self, self.modelobj)
+						hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.modelobj), tostring(self))
 						oldclose(self)
 						if callback then
 							callback(status, path)
@@ -119,19 +120,24 @@ end
 
 
 
+local permitted = {}
+permitted[Holopad.Hologram] = true
+permitted[Holopad.DynamicEnt] = true
+permitted[Holopad.Utility] = true
+
 function PANEL:SetModelObj(mdl)
 	if !mdl then Error("Tried to set the ModelObj to nil! Naughty!") end
 	self.list:Clear()
 	
 	if self.modelobj then
-		hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.mdlobj), tostring(self))
+		hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.modelobj), tostring(self))
 	end
 	
-	self.modelobj = model
+	self.modelobj = mdl
 	
 	local name, model, line
 	for _, v in ipairs(mdl:getAll()) do
-		if v:class() != Holopad.ClipPlane then
+		if permitted[v:class()] then
 			name	= v:getName() or ""
 			model	= v:getModel() or "<Unknown?>"
 			line	= self.list:AddLine(name != "" and name or "<Unnamed>", model:match("/([%a%d_]-)%.mdl$") or model, v)

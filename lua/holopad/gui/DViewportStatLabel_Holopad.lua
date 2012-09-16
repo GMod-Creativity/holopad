@@ -23,7 +23,6 @@ function PANEL:Init()
 	self.LastUpdateID = 0
 	self.UpdateRate = 0.25
 	self.NextUpdate = RealTime() + self.UpdateRate
-	self.MaxHolos = ConVarExists("wire_holograms_burst_amount") and GetConVar("wire_holograms_burst_amount"):GetInt()-1 or nil
 	
 	self:SetText(self.Empty)
 end
@@ -40,11 +39,6 @@ function PANEL:Think()
 				local holos = #self.ModelObj:getType(Holopad.Hologram)
 				stats[#stats+1] = "Current Holos: "
 				stats[#stats+1] = holos
-				if self.MaxHolos then
-					stats[#stats+1] = " / "
-					stats[#stats+1] = self.MaxHolos
-					if holos >= self.MaxHolos then stats[#stats+1] = " !!!" end
-				end
 				stats[#stats+1] = "\nCurrent Clips: "
 				stats[#stats+1] = #self.ModelObj:getType(Holopad.ClipPlane)
 				stats[#stats+1] = "\n\nCamera:\n[" 

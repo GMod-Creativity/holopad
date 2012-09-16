@@ -34,13 +34,11 @@ local this, meta = Holopad.Utils.UtilPlane, Holopad.Utils.UtilPlaneMeta
  */
 function this:New(pos, normal, scale, name)
 	
-	if !holo or holo:class() ~= Holopad.Hologram then Error("Tried to instantiate a ClipPlane with a non-Hologram object;", holo, "\n") return nil end
-	
 	normal	= normal or Vector(0,0,1)
 	local scale = scale or Vector(1,1,1)
 	local max = math.max(scale.x, scale.y, scale.z) * 1.2
 	scale = Vector(max, max, max)
-	local new = this:super():New(pos, normal:Angle(), name or "", Holopad.CLIP_MODEL, Holopad.COLOUR_DEFAULT(), Holopad.CLIP_MATERIAL, scale)
+	local new = this:super():New(pos, (normal:Angle():Up() * -1):Angle(), name or "", Holopad.CLIP_MODEL, Holopad.COLOUR_DEFAULT(), Holopad.CLIP_MATERIAL, scale)
 	
 	new:setParent(holo)
 	

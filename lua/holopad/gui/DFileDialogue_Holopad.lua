@@ -72,6 +72,7 @@ function PANEL:Init()
 	local oldclose = self.Close
 	
 	self.Close = 	function(self)
+						timer.Destroy(tostring(self.doneButton))
 						local callback, status, path = self.callback, self.exitStatus, self.exitFilepath
 						oldclose(self)
 						if callback then
@@ -97,16 +98,15 @@ end
 
 function PANEL:doneButtonClicked()
 	local curfile, fentry = self:GetCurrentFile()
-	print(curfile, fentry)
 	if !curfile or curfile == "" or !fentry or fentry == "" then
 		self.doneButton:SetText("No file name entered!")
-		timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
 		return
 	end
 	
 	if !self.loading and !string.match(fentry, "^([%a%s%d%.-_]+)$") then
 		self.doneButton:SetText("File name is invalid! (a-Z, 0-9, _-)")
-		timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
 		return
 	end
 
@@ -114,12 +114,12 @@ function PANEL:doneButtonClicked()
 	if files and table.Count(files) != 0 then 
 		if !self.loading and !self.checkOverwrite:GetChecked() then
 			self.doneButton:SetText("File exists and overwrite is disabled!")
-			timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+			timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
 			return
 		end
 	elseif self.loading then
 		self.doneButton:SetText("The selected file does not exist!")
-		timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
 		return
 	end
 	

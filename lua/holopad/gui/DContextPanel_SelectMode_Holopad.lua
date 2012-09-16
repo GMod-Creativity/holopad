@@ -177,7 +177,6 @@ function PANEL:createControls()
 	
 	
 	local function dholoValidateModel(path)
-		//print(path)
 		if util.IsValidModel(path) then return false else return "Invalid model path!" end
 	end
 	
@@ -654,7 +653,6 @@ function PANEL:createControls()
 	ypos2 = ypos2 + 25
 	
 	intpanel:SetSize(230, ypos2)
-	//print(ypos, ypos2, apppanel:GetTall(), intpanel:GetTall())
 	
 	categoryList2:AddItem(intpanel)
 	

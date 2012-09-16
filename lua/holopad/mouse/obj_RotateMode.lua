@@ -44,19 +44,10 @@ end
 
 
 local function roundWith(num, round)
-	local abs = math.abs(num)
-	local mod = abs % round
-	if mod < round/2 then return (abs - mod)*(num/abs), -mod*(num/abs) end
-	return (abs + (round - mod))*(num/abs), (round - mod)*(num/abs)
+	local ret = math.Round(num/round)*round
+	return ret, num - ret
 end
 
-local function roundToSnap(ang, snap)
-	local ret = Angle()
-	ret.p = roundWith(ang.p, snap)
-	ret.y = roundWith(ang.y, snap)
-	ret.r = roundWith(ang.r, snap)
-	return ret
-end
 
 /**
 	If snapping should occur, performs the snap.
@@ -71,21 +62,25 @@ end
 function this:doSnap(pass, lpos)
 	if (input.IsKeyDown(KEY_LSHIFT) or input.IsKeyDown(KEY_RSHIFT)) and self.DragEnt then
 		// TODO: world orientation
-		// TODO: snap local to dongles
 		local ang  = self.DragEnt:getAng()
-		local _, diff	// TODO: specialize roundWith for this usage.
+		local _, diff
 		local snap = Holopad.AngleSnap or 15
 		
 		if		self.DragDir == DRAGDIR_FOR then
 			_, diff = roundWith(ang.r, snap)
-			ang:RotateAroundAxis(ang:Forward(), diff)
+			ang.r = _
+			//ang:RotateAroundAxis(ang:Forward(), diff)
 		elseif	self.DragDir == DRAGDIR_RT  then
 			_, diff = roundWith(ang.p, snap)
-			ang:RotateAroundAxis(ang:Right(), diff)
+			ang.p = _
+			//ang:RotateAroundAxis(ang:Right(), diff)
 		elseif	self.DragDir == DRAGDIR_UP  then
 			_, diff = roundWith(ang.y, snap)
-			ang:RotateAroundAxis(ang:Up(), diff)
+			ang.y = _
+			//ang:RotateAroundAxis(ang:Up(), diff)
 		end
+		
+		print("anground", _, diff)
 		
 		self.DragEnt:setAng(ang)
 	end

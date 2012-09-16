@@ -36,7 +36,8 @@ function this:New(pos, ang, name)
 		pos 		= pos or Vector(0,0,0),
 		ang 		= ang or Angle(0,0,0),
 		name 		= name or "",
-		exportable	= false
+		exportable	= false,
+		transient	= false
 	}
 	
 	setmetatable(new, meta)

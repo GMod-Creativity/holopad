@@ -87,7 +87,7 @@ function lib.Save( modelobj, filename, overwrite, options )
 	
 	if (!overwrite && file.Exists(path)) then Error("Unable to export to E2; \"" .. path .. "\" already exists!") return false end
 
-	print("saving to " .. path.. " in the DATA directory")
+	print("Saving to " .. path.. " in the DATA directory")
 	/*
 	local savefile = file.Open(path, "w", "DATA")
 	print("savefile is "..tostring(savefile))
@@ -193,9 +193,6 @@ function lib.GetWriteToE2(struct, options)
 		Error("Unable to export to E2; hologram-count > wire_holograms_burst_amount is not yet supported!")
 		return false
 	end
-	
-	print("holos "..#holos)
-	print("clips "..#clips)
 
 	ret.add(string.format(header,
 							options.name or "Holopad Export",
@@ -246,13 +243,10 @@ end
 function lib.WriteClip(ret, clip, scale)
 
 	local nam = clip:getName()
-	//local mdl = string.lower(clip:getModel()) or Error("Unable to export to E2; a holo has an unsupported model!")
 	local pos = clip:getPos()*scale
 	local nrm = clip:getNormal()
-	print(nam.."\t"..tostring(nrm).."\t"..tostring(clip:getAng()))
 
 	ret.add(tab..tab.."## "..nam.."\n")
-	//savefile:Write(tab..tab..string.format("holoClip(I, J, holoEntity(I):toLocal(entity():toWorld(vec(%.3f, %.3f, %.3f))), holoEntity(I):toLocal(entity():toWorld(vec(%.3f, %.3f, %.3f))), 0)", 
 	ret.add(tab..tab..string.format("holoClip(I, J, holoEntity(I):toLocal(entity():toWorld(vec(%.4f, %.4f, %.4f))), holoEntity(I):toLocalAxis(entity():toWorldAxis(vec(%.4f, %.4f, %.4f))), 0)", 
 					pos.x, pos.y, pos.z,	// position
 					nrm.x, nrm.y, nrm.z))	// normal

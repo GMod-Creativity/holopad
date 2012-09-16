@@ -14,6 +14,7 @@ print("Including holopad")
 
 include("holopad/constants.lua")
 include("holopad/variables.lua")
+//include("holopad/obj_quaternion.lua")
 
 include("holopad/mouse/folder.lua")
 include("holopad/model/folder.lua")

@@ -13,7 +13,7 @@
 //*/
 
 // Hopefully I remember to update this, cba to automate.
-Holopad.LAST_UPDATED	= "10/09/2012 (BETA 5.6.1)"
+Holopad.LAST_UPDATED	= "15/09/2012 (BETA 6)"
 Holopad.LODSA_HURRS		=
 {
 	"if a holo gotta attitude",
@@ -43,8 +43,11 @@ Holopad.LODSA_HURRS		=
 	"tank cops",
 	"tank justice!",
 	"noobstorm",
+	"what happens if i add this code OH GOD",
 	"what happens if i remove this code OH GOD",
-	"10k lines and counting"
+	"10k lines and counting",
+	"inb4 gmod 13",
+	"errors are workflow enhancers"
 }
 
 // Change this if the error model is annoying.

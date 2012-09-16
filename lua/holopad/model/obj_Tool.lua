@@ -16,6 +16,14 @@
 Holopad.Tool, Holopad.ToolMeta = Holopad.inheritsFrom(nil)
 local this, meta = Holopad.Tool, Holopad.ToolMeta
 
+Holopad.Tools = Holopad.Tools or {}
+
+this.icon = "holopad/tools/tool"
+this.name = "Generic Tool"
+this.author = "Bubbus"
+this.gui = "DTool_Holopad"
+this.isTool = true
+
 
 /**
 	Constructor for the Holopad Tool object.
@@ -25,11 +33,17 @@ function this:New()
 
 	local new = 
 	{
-		utils = {},
-		modelObj, viewport, glasspane
+		// this is a dictionary, not an array!
+		utils = {},	
+		
+		// resources for use in the tool (from the active scene)
+		modelObj, viewport, glasspane	
 	}
 	
 	setmetatable(new, meta)
+	// copy this line into your subclass - sorry :(
+	new.modelUpdateListener = function(update) this.modelUpdateListener(new, update) end
+	
 	return new
 
 end
@@ -52,11 +66,12 @@ end
  */
 function this:SetModelObj(mdl)
 	if self.modelObj then
+		self.modelObj:endTool()
 		hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.modelObj), tostring(self.modelUpdateListener))
 	end
-	self.modelObj = model
+	self.modelObj = mdl
+	self.modelObj:startTool(self)
 	hook.Add(Holopad.MODEL_UPDATE .. tostring(self.modelObj), tostring(self.modelUpdateListener), self.modelUpdateListener)
-	self.Viewport:SetModelObj(model)
 end
 
 function this:GetModelObj()
@@ -105,6 +120,8 @@ end
  */
 function this:AddUtility(util)
 	self.utils[util] = true
+	if self.modelObj then self.modelObj:addEntity(util) end
+	return true
 end
 
 
@@ -114,10 +131,14 @@ end
 	Args;
 		util	Holopad.Utility
 			the Utility to remove
+		frommodel	Boolean
+			if true, do not try to remove the utility from the model too.
  */
-function this:RemoveUtility(util)
-	if !self.utils[util] then Error("Tried removing a Utility from a Tool which does not own it!") return end
+function this:RemoveUtility(util, frommodel)
+	if !self.utils[util] then ErrorNoHalt("WARNING: Tried removing a Utility from a Tool which does not own it!  Continuing...") return true end
 	self.utils[util] = nil
+	if !frommodel and self.modelObj then self.modelObj:removeEntity(util) end
+	return true
 end
 
 
@@ -156,6 +177,31 @@ end
 	Applies the effects of the Tool, where applicable.
  */
 function this:Apply()
+end
+
+
+
+/**
+	Exit the Tool safely.
+	After this function is called, the tool should have been deactivated in a safe manner and the model should no longer be running the tool.
+ */
+function this:Quit()
+	if self.modelObj then
+		self.modelObj:endTool()
+	end
+end
+
+
+
+/**
+	If the GUI for this Tool is created, this function should then be invoked to properly configure the GUI and bind the Tool to it.
+	Args;
+		gooey	DFrame
+			the Tool's GUI
+ */
+function this:OnCreatedGUI(gooey)
+	if !gooey then Error("Tool was passed a nil GUI") return end
+	gooey:SetTool(self)
 end
 
 

@@ -87,6 +87,16 @@ function this:deparent()
 	//ErrorNoHalt("WARNING: Deparenting ClipPlane from Hologram;", self, "(if you did NOT just delete a ClipPlane, this is an ERROR!)\n")
 	this:super().deparent(self)
 end
+
+
+
+/**
+	Deny attempts to parent ents to clip planes
+ */
+function this:parentingChild()
+	return false
+end
+
  
 
 /**
@@ -109,17 +119,24 @@ function this:clone(parentoverride)
 	clone:setAng(self:getAng())
 	clone:setScale(self:getScale())
 	
-	//(self:getPos(), self:getAng(), self:getName(), self:getModel(), self:getColour(), self:getMaterial(), self:getScale())
-	
-	/* clip planes shouldn't have kids
-	local kids  = self:getChildren(true)
-	
-	for _, v in pairs(kids) do
-		v:clone(clone)
-	end
-	//*/
+	return clone
+end
+
+
+/**
+	Return: Holopad.Entity
+		a copy of this Entity
+ */
+function this:cloneToModel(parentoverride, model)
+	local clone = this:New(parentoverride or self:getParent(), self:getNormal(), self:getName())
+	clone:setPos(self:getPos())
+	clone:setAng(self:getAng())
+	clone:setScale(self:getScale())
+	model:addEntity(clone)
 	
 	return clone
 end
+
+
 
 

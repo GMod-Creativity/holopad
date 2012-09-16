@@ -16,6 +16,8 @@
 // should load all supers
 include("holopad/model/obj_ClipPlane.lua")
 include("holopad/model/obj_Utility.lua")
+include("holopad/model/obj_Tool.lua")
+
 
 Holopad.Model, Holopad.ModelMeta = Holopad.inheritsFrom(nil)
 local this, meta = Holopad.Model, Holopad.ModelMeta
@@ -86,13 +88,18 @@ end
 		ent	Table (inherits Holopad.Entity)
 			entity to remove
 		force	Boolean
-			for if you reealllyyy want to remove the ent.
+			INTERNAL: for if you reealllyyy want to remove the ent.
+			i reealllyyy don't want you to use this param though :D
  */
 function this:removeEntity(ent, force)
 
 	if !ent:instanceof(Holopad.Entity) then Error("Attempted to remove a non-Entity from the Model!") return end
 	if !table.HasValue(self.entities, ent) then Error("Attempted to remove a non-member from the Model!") return end
-	if !force and self.tool and ent:instanceof(Holopad.Utility) then Error("Cannot remove Utilities without breaking the active Tool!") return end
+	if self.tool then
+		if ent:instanceof(Holopad.Utility) then // only one tool at a time - assume util belongs to tool.  orphaned utils are bad.
+			if !force and !self.tool:RemoveUtility(ent, true) then Error("Could not complete removeEntity - blocked by active tool.") return end
+		end
+	end
 
 	local kent = table.KeyFromValue(self.entities, ent)
 	local kids = ent:getChildren()
@@ -289,10 +296,12 @@ end
  */
 function this:startTool(tool)
 	if self.tool then Error("A tool is already in use within this Model.  Finish using that tool before starting a new one.") return end
-	self:deselectAll()
+	//self:deselectAll()
 
+	self.tool = tool
+	
+	print("Starting tool...")
 	for k, v in pairs(tool:GetUtilities()) do
-		//if !v:instanceof(Holopad.Utility) then Error("Tried to pass a non-Utility to a Model as a Utility!") return end
 		self:addEntity(v)
 	end
 
@@ -310,9 +319,20 @@ end
 function this:endTool()
 	if !self.tool then Error("Tried to end a Tool, but no Tool is currently in use!") return end
 	
-	for k, v in pairs(tool:GetUtilities()) do
-		self:removeEntity(v)
+	print("Ending tool...")
+	for k, v in pairs(self.tool:GetUtilities()) do
+		self:removeEntity(v, true)
 	end
+	
+	local orphans = self:getType(Holopad.Utility, true)
+	if #orphans > 0 then
+		ErrorNoHalt("WARNING: The last tool left behind orphaned Utilities!  Cleaning up...")
+		for i=1, #orphans do
+			self:removeEntity(orphans[i], true)
+		end
+	end
+	
+	self.tool = nil
 
 	local update = {
 		tool = false

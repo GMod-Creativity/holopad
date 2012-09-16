@@ -6,12 +6,11 @@
 	| |  | | (_) | | (_) | |_) | (_| | (_| |
 	|_|  |_|\___/|_|\___/| .__/ \__,_|\__,_|
 	By Bubbus			 | | Folder includes
-	splambob@gmail.com	 |_| 16/07/2012               
+	splambob@gmail.com	 |_| 14/09/2012               
 	
 //*/
 
-print("Including holopad/gui")
+print("Including holopad/model/tools")
 
-include("holopad/gui/DHolopad.lua")
-
-include("holopad/gui/tools/folder.lua")
+include("holopad/model/tools/obj_Mirror.lua")
+include("holopad/model/tools/obj_Measure.lua")

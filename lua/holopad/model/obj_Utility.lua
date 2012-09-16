@@ -17,6 +17,7 @@
 Holopad.Utility, Holopad.UtilityMeta = Holopad.inheritsFrom(Holopad.Hologram)
 local this, meta = Holopad.Utility, Holopad.UtilityMeta
 
+Holopad.Utils = Holopad.Utils or {}
 
 /**
 	Constructor for the Holopad Utility "object".  Undefined paramaters assume default values.
@@ -29,12 +30,13 @@ local this, meta = Holopad.Utility, Holopad.UtilityMeta
 			Name of the utility
 	Return:	Table (inherits Holopad.Utility)
  */
-function this:New(pos, ang, name)
+function this:New(pos, ang, name, model, colour, material)
 
 	local new = this:super():New(pos, ang, name, model, colour, material)
 	
 	setmetatable(new, meta)
 	new.exportable = false
+	new.transient = true
 	
 	return new
 

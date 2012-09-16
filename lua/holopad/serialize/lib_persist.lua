@@ -117,7 +117,6 @@ function lib.Retrieve()
 	vals = von.deserialize(ser)
 	
 	Msg("Reviving persisted vars...\n")
-	//PrintTable(vals)
 	
 	for name, val in pairs(vals) do
 		exp = string.Explode(".", name)

@@ -131,14 +131,20 @@ end
  */
 function this:deparent()
 
-	if self.parent then
-		local parent = self.parent
-		parent:deparentingChild(self)
-		//hook.Remove(Holopad.ENT_DEPARENTALLHOOK .. tostring(parent), tostring(self))
-		hook.Remove(Holopad.ENT_UPDATEHOOK .. tostring(parent), tostring(self))
-		self.parent = nil
-		hook.Call(Holopad.ENT_UPDATEHOOK .. tostring(self), nil, self, {ent = self, parent = nil})
+	if !self.parent then return false end
+	
+	local parent = self.parent
+	if !parent:deparentingChild(self) then
+		ErrorNoHalt("WARNING: Tried to deparent " .. self .. " from " .. ent .. " but " .. ent .. "rejected the attempt!")
+		return false
 	end
+	
+	hook.Remove(Holopad.ENT_UPDATEHOOK .. tostring(parent), tostring(self))
+	self.parent = nil
+	hook.Call(Holopad.ENT_UPDATEHOOK .. tostring(self), nil, self, {ent = self, parent = nil})
+	
+	return true
+
 end
 
 
@@ -147,8 +153,8 @@ end
 	internal - do not call
  */
 function this:deparentingChild(kid)
-	//print("bye!", kid)
 	self.children[kid] = nil
+	return true
 end
 
 
@@ -175,22 +181,21 @@ end
  */
 function this:setParent(ent)
 
-	if self == ent then Error("Can't parent to self!") return end
-	if self:hasChild(ent, true) then Error("Parent loop detected - cannot parent!") return end
+	if !(ent and ent:instanceof(Holopad.DynamicEnt)) then return false end
+	if self == ent then Error("Can't parent to self!") return false end
+	if self:hasChild(ent, true) then Error("Parent loop detected - cannot parent!") return false end
 	
-	if ent and ent:instanceof(Holopad.DynamicEnt) then
-		self:deparent()
-		self.parent = ent
-		ent:parentingChild(self)
-		
-		// parent modification callbacks
-		hook.Add(Holopad.ENT_UPDATEHOOK 		.. tostring(ent),	tostring(self), self.parentUpdate)
-		//hook.Add(Holopad.ENT_DEPARENTALLHOOK	.. tostring(ent),	tostring(self), self.parentDeparentAll)
-		
-		return true
+	if !ent:parentingChild(self) then
+		ErrorNoHalt("WARNING: Tried to parent " .. self .. " to " .. ent .. " but " .. ent .. "rejected the attempt!")
+		return false
 	end
 	
-	return false
+	self:deparent()
+	self.parent = ent
+
+	hook.Add(Holopad.ENT_UPDATEHOOK .. tostring(ent),	tostring(self), self.parentUpdate)
+	
+	return true
 end
 
 
@@ -199,8 +204,8 @@ end
 	internal - do not call
  */
 function this:parentingChild(kid)
-	//print("hi!", kid)
 	self.children[kid] = true
+	return true
 end
 
 
@@ -295,19 +300,56 @@ end
 
 
 /**
+	Clone the DynamicEnt.
+	Args;
+		parentoverride	Holopad.Entity
+			parent to this ent if not nil.
+		nokids	Boolean
+			should we omit children in the clone process?
 	Return: Holopad.DynamicEnt
 		a copy of this Entity
  */
-function this:clone(parentoverride)
+function this:clone(parentoverride, nokids)
 	local clone = this:New(self:getPos(), self:getAng(), self:getName(), self:getModel(), self:getColour(), self:getMaterial())
 	clone:setParent(parentoverride or self:getParent())
 	
-	local kids  = self:getChildren()
-	
-	for _, v in pairs(kids) do
-		print("a kid!", v)
-		v:clone(clone)
+	if !nokids then
+		local kids  = self:getChildren()		
+		for _, v in pairs(kids) do
+			v:clone(clone)
+		end
 	end
 	
 	return clone
 end
+
+
+
+/**
+	Clone the DynamicEnt into the provided Model.
+	Args;
+		parentoverride	Holopad.Entity
+			parent to this ent if not nil.
+		model	Holopad.Model
+			the model to clone into.
+		nokids	Boolean
+			should we omit children in the clone process?
+	Return: Holopad.DynamicEnt
+		a copy of this Entity
+ */
+function this:cloneToModel(parentoverride, model, nokids)
+	local clone = this:New(self:getPos(), self:getAng(), self:getName(), self:getModel(), self:getColour(), self:getMaterial())
+	clone:setParent(parentoverride or self:getParent())
+	model:addEntity(clone)
+	
+	if !nokids then
+		local kids  = self:getChildren()		
+		for _, v in pairs(kids) do
+			v:cloneToModel(clone, model)
+		end
+	end
+	
+	return clone
+end
+
+

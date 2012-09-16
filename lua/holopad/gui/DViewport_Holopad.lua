@@ -310,16 +310,6 @@ end
 			the ent associated to the tested CSModel
  */
 function PANEL:GetSizeOf(ent)
-	/*
-	local mdl = self.EntModels[ent]
-	if !mdl then Error("Tried getting the size of an ent which is not in this Viewport") return nil end
-	
-	local scale = mdl:GetModelScale()
-	local min, max = mdl:WorldSpaceAABB()
-	local size = max - min
-	print(scale, size)
-	return (scale * size)
-	//*/
 	local mdl = self.EntModels[ent]
 	if !mdl then Error("Tried getting the size of an ent which is not in this Viewport") return nil end
 	return mdl.origRenderBounds * mdl.curModelScale * 2//Vector(16, 16, 16)
@@ -708,7 +698,7 @@ function PANEL:Paint(w, h)
 			render.SetColorModulation(col.r/255, col.g/255, col.b/255)
 			render.SetBlend(col.a/255)
 			
-			self:doDrawModel(v)
+			self:doDrawModel(v, k)
 		end
 	end
     
@@ -720,12 +710,12 @@ end
 
 
 
-function PANEL:doDrawModel(model)
+function PANEL:doDrawModel(model, ent)
 	
 	if model.holoClips then self:setupClipping(model) end
 	
 	if self.overrideMat then
-		local overmat = model:GetMaterial()
+		local overmat = ent:getMaterial()
 		model:SetMaterial(self.overrideMat)
 		model:DrawModel()
 		model:SetMaterial(overmat)

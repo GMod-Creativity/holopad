@@ -142,11 +142,9 @@ function this:getSelectionCandidate(glasspane, lpos)
 	for _, v in ipairs(visible) do
 		screenvec = viewport:GetScreenVec(v:getPos())
 		if screenvec && lpos:Distance(screenvec) <= glasspane:GetMarkerSize(v)/2 then
-			//print("doink")
 			return v
 		end
 	end
-	//print("sadface")
 	return nil
 end
 

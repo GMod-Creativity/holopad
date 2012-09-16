@@ -106,12 +106,10 @@ function PANEL:createControls()
 	
 	
 	local dholoWangMove = function(this)
-		//print("move!")
 		local model	= self:GetParent():GetModelObj()
 		local selent = model:getSelectedEnts()
 		local count	= #selent
 		selent = selent[1]
-		//print(count, selent:instanceof(DynamicEnt))
 		if count == 0 or count > 1 then return end // TODO: move multiple entities as group
 		if !selent:instanceof(Holopad.DynamicEnt) then return end
 		

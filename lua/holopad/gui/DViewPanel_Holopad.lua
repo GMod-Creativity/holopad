@@ -81,7 +81,6 @@ function PANEL:Init()
 	self.Think = function(self) self:OldThink() self:Think2() end
 	
 	self.ModelUpdateListener = function(upd)
-		//print("upd", upd)
 		if upd.removed then
 			self.ModelObj:deselectEnt(upd.ent)
 		end

@@ -24,6 +24,7 @@ include("holopad/gui/DContextPanel_RotateMode_Holopad.lua")
 include("holopad/gui/DContextPanel_ScaleMode_Holopad.lua")
 include("holopad/gui/DContextPanel_SelectMode_Holopad.lua")
 include("holopad/gui/DContextPanel_CameraMode_Holopad.lua")
+include("holopad/gui/DToolSelect_Holopad.lua")
 include("holopad/gui/DMatSelect_Holopad.lua")
 
 
@@ -85,7 +86,7 @@ function PANEL:Init()
 	
 																	
 	self:addButton("holopad/load", 		"Load a Project File...", 	function()
-																		if self.fileDialogue then Error("A file dialogue is already open.  Please use it or close it ok thanks!") return end
+																		if self.fileDialogue then Error("A dialogue is already open.  Please use it or close it ok thanks!") return end
 																		self.fileDialogue = vgui.Create("DFileDialogue_Holopad", self)
 																		self.fileDialogue:SetRootFolder("Holopad", true)
 																		self.fileDialogue:SetLoading(true)
@@ -102,17 +103,32 @@ function PANEL:Init()
 																	end)																	
 	
 	self:addButton("holopad/export", 	"Export to E2...", 			function()
-																		if self.fileDialogue then Error("A file dialogue is already open.  Please use it or close it ok thanks!") return end
+																		if self.fileDialogue then Error("A dialogue is already open.  Please use it or close it ok thanks!") return end
 																		self.fileDialogue = vgui.Create("DE2ExportDialogue_Holopad", self)
 																		self.fileDialogue:SetRootFolder("Expression2")
 																		self.fileDialogue:SetModelObj(self.ModelObj)
 																		self.fileDialogue:SetCallback(function(success, path) self.fileDialogue = nil end)
 																	end)
 	self:placeSpacer()
-	// TODO: create holo menu (and button picture)
+	
 	self:addButton("holopad/addholo", 	"Create Holos", 			function() if self.holoMenu then self.holoMenu:Close() end self.holoMenu = vgui.Create( "DCreateHoloMenu_Holopad", self ) end)
-	// TODO: delete holo functionality (and button picture)
+	
 	self:addButton("holopad/removeholo", "Delete Holos", 			function() for _, v in pairs(self.ModelObj:getSelectedEnts()) do self.ModelObj:removeEntity(v) end end)
+	
+	self:addButton("holopad/tools/tool", "Use a Tool", 				function()
+																		if self.fileDialogue then Error("A dialogue is already open.  Please use it or close it ok thanks!") return end
+																		self.fileDialogue = vgui.Create( "DToolSelect_Holopad", self )
+																		self.fileDialogue:SetCallback(	function(success, gooey, tool)
+																											self.fileDialogue = nil
+																											if !success then return end
+																											local vp = self:GetViewPanel() or Error("No ViewPanel?!?! TELL BUBBUS.")
+																											tool:SetViewport(vp:GetViewport())
+																											tool:SetGlassPane(vp:GetGlassPane())
+																											tool:SetModelObj(self:GetModelObj())
+																											tool:OnCreatedGUI(gooey)
+																										end)
+																	end)
+	
 	self:placeSpacer()
 	self:addButton("holopad/camera", 	"Move Camera", 				function()
 																		self.ViewPanel:GetMouseHandler():setActiveMode("camera")
@@ -291,7 +307,7 @@ end
 	Places a blank space onto the panel.
  */
 function PANEL:placeSpacer()
-	self.LastButtonX = self.LastButtonX + 49
+	self.LastButtonX = self.LastButtonX + 25
 end
 
 

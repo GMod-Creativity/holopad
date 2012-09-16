@@ -49,7 +49,6 @@ end
 
 local function parseversion(header)
 	local vers = string.match(header, "^HOLOPAD PRJ (%d+)$")
-	//print("vers =", vers or "nil")
 	if !vers or vers == "" then return nil end
 	return vers
 end
@@ -80,7 +79,6 @@ end
 function lib.Load(projfile, addto)
 	
 	//local projfile = file.Open("holopad/"..projfile..".txt", "r", "DATA")
-	//print("savefile is "..tostring(savefile))
 	if !projfile then return false end
 	
 	//local content = projfile:Read(projfile:Size())
@@ -90,7 +88,6 @@ function lib.Load(projfile, addto)
 	local conttable = string.Explode("\n", content)
 	if #conttable <= 1 then return badfile(projfile) end
 	
-	//print(conttable[1])
 	local vers = parseversion(conttable[1])
 	
 	if !vers then return badfile(projfile) end

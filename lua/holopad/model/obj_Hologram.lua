@@ -87,66 +87,77 @@ end
 
 
 /**
-	Creates the parent-modification callbacks for this ent.
-	Required because hook library doesn't support OOP (afaik)
+	Clone the Hologram.
+	Args;
+		parentoverride	Holopad.Entity
+			parent to this ent if not nil.
+		nokids	Boolean
+			should we omit children in the clone process?
+		noclips	Boolean
+			should we omit clips in the clone process?
+	Return: Holopad.DynamicEnt
+		a copy of this Entity
  */
-function this:setupParentUpdates()
-	this:super().setupParentUpdates(self)
+function this:clone(parentoverride, nokids, noclips)
+	local clone = this:New(self:getPos(), self:getAng(), self:getName(), self:getModel(), self:getColour(), self:getMaterial(), self:getScale())
+	clone:setParent(parentoverride or self:getParent())
 	
-	/*
-	// TODO: convert to function table
-	self.parentUpdate = function(ent, update)
-		if update.pos then
-			self:setPos(self.pos + update.posdelta)
-			return
+	local kids  = self:getChildren(true)
+	
+	if noclips and nokids then return clone end
+	
+	if nokids then
+		for _, v in pairs(kids) do
+			if v:class() == Holopad.ClipPlane then
+				v:clone(clone, true)
+			end
 		end
-		
-		if update.ang then
-			local entpos = ent:getPos()
-			local localVec, localAng	= WorldToLocal(self.pos, self.ang, entpos, update.angbefore)
-			local newVec, newAng		= LocalToWorld(localVec, localAng, entpos, update.ang)
-			self:setPos(newVec)
-			self:setAng(newAng)
-			return
-		end
-		
-		if update.scale then
-			// TODO: verify this
-			local entang, entpos = ent:getAng(), ent:getPos()
-			local localpos, lang = WorldToLocal(self.pos, self.ang, entpos, entang)
-			local scaledelta = update.scale - update.scalebefore
-			local div = Vector(scaledelta.x/update.scale.x, scaledelta.y/update.scale.y, scaledelta.z/update.scale.z) // WTF?
-			localpos = localpos + localpos * div
-			self:setPos(LocalToWorld(localpos, self.ang, entpos, entang))
-			// TODO: this is not perfect.  keep it?
-			if Holopad.ScaleParentedHolos then
-				local scale = self:getScale()
-				self:setScale(scale + scale * div)
+	elseif noclips then
+		for _, v in pairs(kids) do
+			if v:class() != Holopad.ClipPlane then
+				v:clone(clone, nil, true)
 			end
 		end
 	end
-	//*/
+	
+	return clone
 end
 
 
 
 /**
-	Return: Holopad.Entity
+	Clone the Hologram into the provided Model.
+	Args;
+		parentoverride	Holopad.Entity
+			parent to this ent if not nil.
+		model	Holopad.Model
+			the model to clone into.
+		nokids	Boolean
+			should we omit children in the clone process?
+	Return: Holopad.DynamicEnt
 		a copy of this Entity
  */
-function this:clone(parentoverride)
+function this:cloneToModel(parentoverride, model, nokids, noclips)
 	local clone = this:New(self:getPos(), self:getAng(), self:getName(), self:getModel(), self:getColour(), self:getMaterial(), self:getScale())
+	clone:setParent(parentoverride or self:getParent())
+	model:addEntity(clone)
 	
-	if parentoverride then
-		clone:setParent(parentoverride)
-	else
-		clone:setParent(self:getParent())
-	end
+	if noclips and nokids then return clone end
 	
 	local kids  = self:getChildren(true)
 	
-	for _, v in pairs(kids) do
-		v:clone(clone)
+	if nokids then
+		for _, v in pairs(kids) do
+			if v:class() == Holopad.ClipPlane then
+				v:cloneToModel(clone, model, true)
+			end
+		end
+	elseif noclips then
+		for _, v in pairs(kids) do
+			if v:class() != Holopad.ClipPlane then
+				v:cloneToModel(clone, model, nil, true)
+			end
+		end
 	end
 	
 	return clone

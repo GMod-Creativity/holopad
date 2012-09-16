@@ -223,12 +223,7 @@ function lib.Save( modelobj, filename, overwrite, options )
 	
 	if (!overwrite && file.Exists(path)) then Error("Unable to export to E2; \"" .. path .. "\" already exists!\n") return false end
 
-	print("saving to " .. path.. " in the DATA directory")
-	/*
-	local savefile = file.Open(path, "w", "DATA")
-	print("savefile is "..tostring(savefile))
-	if !savefile then return false end
-	//*/
+	print("Saving to " .. path.. " in the DATA directory")
 	
 	local ordered	= commons.modelToList(modelobj)
 	local formatted	= commons.listToTables(ordered)
