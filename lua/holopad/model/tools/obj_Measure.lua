@@ -73,6 +73,15 @@ end
 
 
 
+/**
+	Return: Number
+		The distance between the measure points.
+ */
+function this:GetDistance()
+	return self.point1:getPos():Distance(self.point2:getPos())
+end
+
+
 
 /**
 	If the GUI for this Tool is created, this function should then be invoked to properly configure the GUI and bind the Tool to it.

@@ -40,6 +40,7 @@ function this:New()
 	
 	new.modelUpdateListener = function(update) this.modelUpdateListener(new, update) end
 	new.plane = Holopad.Utils.UtilPlane:New(nil, nil, Vector(4, 4, 4), "Mirror Plane")
+	new.plane:setMaterial("holopad/planes/mirrorplane")
 	new.utils[new.plane] = true
 	
 	return new
@@ -113,6 +114,18 @@ end
  */
 function this:SetCloneEnts(bool)
 	self.doclone = bool
+end
+
+
+
+/**
+	Clip entities through the mirror plane?
+	Args;
+		bool	Boolean
+			true for clips else false
+ */
+function this:SetPlaneSlice(bool)
+	self.doclip = bool
 end
 
 
@@ -372,12 +385,14 @@ function this:Apply()
 	for k, ent in pairs(self:GetModelObj():getSelectedEnts()) do
 		if permitted[ent:class()] then
 		
+			local oldent
 			if self.doclone then
+				oldent = ent
 				ent = ent:cloneToModel(nil, self:GetModelObj(), true) or Error("Mirror-Clone failed on ent " .. ent)
 			end
 	
 			local origin = self.plane:getPos()
-			local normal = self.plane:getNormal()
+			local normal = self.plane:getNormal():Normalize()
 			
 			local pos = ent:getPos()
 			local ang = ent:getAng()
@@ -422,6 +437,26 @@ function this:Apply()
 			local length = normal:Dot(origin - v)
 			local vec = normal * length * 2
 			ent:setPos(pos + vec)
+			
+			
+			// clip ents through mirror plane
+			if self.doclip then
+				local abovebelow = normal:Dot((v - origin):Normalize()) > 0 and 1 or -1
+				local clipang = (normal:Angle():Up() * -1 * abovebelow):Angle()
+				clipang:RotateAroundAxis(clipang:Right(), 180)
+				
+				// clip the mirrored ent
+				local clip = Holopad.ClipPlane:New2(origin, clipang, "Mirror Clip (" .. ent:getName() .. ")", nil, nil, nil, nil, ent)
+				self:GetModelObj():addEntity(clip)
+				
+				// if we duplicated before mirroring, clip the old ent too
+				if self.doclone then
+					local clipang2 = Angle(clipang.p, clipang.y, clipang.r)
+					clipang2:RotateAroundAxis(clipang2:Right(), 180)
+					local clip = Holopad.ClipPlane:New2(origin, clipang2, "Mirror Clip (" .. oldent:getName() .. ")", nil, nil, nil, nil, oldent)
+					self:GetModelObj():addEntity(clip)
+				end
+			end
 			
 		end
 	end

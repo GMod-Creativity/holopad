@@ -40,7 +40,7 @@ function this:New(holo, normal, name)
 	local scale = holo:getScale()
 	local max = math.max(scale.x, scale.y, scale.z) * 1.2
 	scale = Vector(max, max, max)
-	local new = this:super():New(holo:getPos(), normal:Angle(), name or "", Holopad.CLIP_MODEL, Holopad.COLOUR_DEFAULT(), Holopad.CLIP_MATERIAL, scale)
+	local new = this:super():New(holo:getPos(), normal:Angle(), name or "", Holopad.CLIP_MODEL, Holopad.CLIP_COLOUR_DEFAULT(), Holopad.CLIP_MATERIAL, scale)
 	
 	new:setParent(holo)
 	
@@ -55,7 +55,7 @@ end
 
 function this:New2(pos, ang, name, model, colour, material, scale, parent)
 
-	local new = this:super():New(pos, ang, name, Holopad.CLIP_MODEL, Holopad.COLOUR_DEFAULT(), Holopad.CLIP_MATERIAL, scale)
+	local new = this:super():New(pos, ang, name, Holopad.CLIP_MODEL, Holopad.CLIP_COLOUR_DEFAULT(), Holopad.CLIP_MATERIAL, scale)
 	
 	if parent then new:setParent(parent) end
 	

@@ -58,13 +58,15 @@ Holopad.CUSTOM_MODEL_PATH = "models/props_combine/breenbust.mdl"
 // clip planes!
 Holopad.CLIP_MODEL		= "models/Holograms/plane.mdl"
 // material for clip planes
-Holopad.CLIP_MATERIAL	= "holopad/wireframenocull"
+Holopad.CLIP_MATERIAL	= "holopad/planes/clipplane"
 //material for model markers
 Holopad.MODEL_MARKER_TEXTURE = surface.GetTextureID("holopad/circlemarker")
 
 // you don't want the default entity colour to be opaque white?!?!?!?!
 // this is a function because Color is mutable.
 Holopad.COLOUR_DEFAULT	= function() return Color(255, 255, 255, 255) end
+// default clip-plane colour
+Holopad.CLIP_COLOUR_DEFAULT	= function() return Color(255, 0, 0, 255) end
 
 // prefix for entity modification callbacks
 Holopad.ENT_UPDATEHOOK	= "Holopad_Ent_Modified "

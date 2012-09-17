@@ -28,7 +28,7 @@ function PANEL:Init()
 	self:ShowCloseButton(true)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 200, 300
+	self.ContentX, self.ContentY	= 200, 215
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	self.ControlType = "select"
@@ -76,6 +76,7 @@ function PANEL:SetTool(mdl)
 	if self.tool then Error("Can't reset the tool bound to a tool gui!") return end
 	if !mdl:class() == Holopad.Tools.Mirror then Error("Can't bind this gui to this tool!") return end
 	self.tool = mdl
+	self:SetDistLabelValue(mdl:GetDistance())
 end
 
 function PANEL:GetTool()
@@ -85,7 +86,7 @@ end
 
 
 function PANEL:SetDistLabelValue(dist)
-	self.distlabel:SetText(dist)
+	self.distlabel:SetText(math.Round(dist*self.lendata.mul*(self.do075 and 0.75 or 1), 3) .. " " .. self.lendata.short)
 	self.distlabel:SizeToContents()
 end
 
@@ -120,19 +121,36 @@ function PANEL:createControls()
 	collabel:SetText(
 [[This is the Measure Tool!
 
-Move the endpoints to measure!
-Distances are measured in GLU
-(GMod Length Units)
-
-TODO: more units (mm, m, in, ft).
-TODO: above with 0.75 / 1 selector
-TODO: onscreen display
+Move the hula dolls to measure!
+Choose the unit in the list.
 ]]
 	)
 	collabel:SizeToContents()
 	collabel:SetPos(5, 5)
 	
-	local ypos = 20 + collabel:GetTall()
+	local ypos = 10 + collabel:GetTall()
+	
+	self.lendata = {mul = 1, short = "GLU"}
+	local List= vgui.Create( "DMultiChoice", apppanel)
+	List:SetPos(5, ypos)
+	List:SetSize( 100, 20 )
+	List.OnSelect = function(list, idx, val, data) self.lendata = data self:SetDistLabelValue(self:GetTool():GetDistance()) end
+	List:AddChoice("GLU", self.lendata)
+	List:AddChoice("Metres", {mul = 0.0254, short = "m"})
+	List:AddChoice("Millimetres", {mul = 25.4, short = "mm"})
+	List:AddChoice("Inches", {mul = 1, short = "in"})
+	List:AddChoice("Feet", {mul = 1/12, short = "ft"})
+	
+	ypos = ypos + 30
+	
+	local clonecheck = vgui.Create( "DCheckBoxLabel", apppanel )
+	clonecheck:SetPos( 5, ypos )
+	clonecheck:SetText( "Dist x 0.75" )
+	clonecheck.OnChange = function(check) self.do075 = clonecheck:GetChecked() self:SetDistLabelValue(self:GetTool():GetDistance()) end
+	clonecheck:SetChecked(true)
+	clonecheck:SizeToContents()
+	
+	ypos = ypos + clonecheck:GetTall() + 10
 	
 	local cdlabel1 = vgui.Create("DLabel", apppanel)
 	cdlabel1:SetText("Distance:")
@@ -142,7 +160,7 @@ TODO: onscreen display
 	local cdlabel2 = vgui.Create("DLabel", apppanel)
 	cdlabel2:SetText("")
 	cdlabel2:SizeToContents()
-	cdlabel2:SetPos(5 + cdlabel1:GetWide(), ypos)
+	cdlabel2:SetPos(10 + cdlabel1:GetWide(), ypos)
 	self.distlabel = cdlabel2
 	
 	ypos = ypos + 10 + cdlabel1:GetTall()

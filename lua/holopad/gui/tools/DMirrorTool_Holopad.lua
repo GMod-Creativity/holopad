@@ -28,7 +28,7 @@ function PANEL:Init()
 	self:ShowCloseButton(true)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 200, 270
+	self.ContentX, self.ContentY	= 200, 370
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	self.ControlType = "select"
@@ -127,7 +127,10 @@ Move the plane, then select the
 things you want to mirror.
 
 Press Apply to mirror the
-selected objects!]]
+selected objects!
+
+Warning: Clip-planes apply to
+ALL selected entities!!]]
 	)
 	collabel:SizeToContents()
 	collabel:SetPos(5, 5)
@@ -142,6 +145,15 @@ selected objects!]]
 	clonecheck:SizeToContents()
 	
 	ypos = ypos + 10 + clonecheck:GetTall()
+	
+	local slicecheck = vgui.Create( "DCheckBoxLabel", apppanel )
+	slicecheck:SetPos( 5, ypos )
+	slicecheck:SetText( "Mirror Plane = Clip Plane" )
+	slicecheck.OnChange = function(check) if self.tool then self.tool:SetPlaneSlice(slicecheck:GetChecked()) end end
+	slicecheck:SetChecked(true)
+	slicecheck:SizeToContents()
+	
+	ypos = ypos + 10 + slicecheck:GetTall()
 	
 	local selectbutton = vgui.Create("DButton", apppanel)
 	selectbutton:SetText( "Select Mirror Plane" )

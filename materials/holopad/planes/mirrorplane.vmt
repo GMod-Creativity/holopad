@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "holopad/planes/mirrorplane"
+	"$alphatest" 1
+	"$nocull"	1
+}
+
+
