@@ -170,8 +170,22 @@ function PANEL:Init()
 	if x > sx - self.WindowX then x = sx - self.WindowX end
 	self:SetPos(x, y)
 	
+	local oldclose = self.Close
+	self.Close = 	function(self)
+						local callback = self.callback
+						oldclose(self)
+						if callback then
+							callback()
+						end
+					end
+	
 end
 
+
+
+function PANEL:SetCallback(func)
+	self.callback = func
+end
 
 
 

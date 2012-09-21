@@ -26,6 +26,7 @@ include("holopad/gui/DContextPanel_SelectMode_Holopad.lua")
 include("holopad/gui/DContextPanel_CameraMode_Holopad.lua")
 include("holopad/gui/DToolSelect_Holopad.lua")
 include("holopad/gui/DMatSelect_Holopad.lua")
+include("holopad/mouse/obj_Keyboard.lua")
 
 
 local PANEL = {}
@@ -111,7 +112,11 @@ function PANEL:Init()
 																	end)
 	self:placeSpacer()
 	
-	self:addButton("holopad/addholo", 	"Create Holos", 			function() if self.holoMenu then self.holoMenu:Close() end self.holoMenu = vgui.Create( "DCreateHoloMenu_Holopad", self ) end)
+	self:addButton("holopad/addholo", 	"Create Holos", 			function()
+																		if self.holoMenu then self.holoMenu:Close() end
+																		self.holoMenu = vgui.Create( "DCreateHoloMenu_Holopad", self )
+																		self.holoMenu:SetCallback(function() self.holoMenu = nil end)
+																	end)
 	
 	self:addButton("holopad/removeholo", "Delete Holos", 			function() for _, v in pairs(self.ModelObj:getSelectedEnts()) do self.ModelObj:removeEntity(v) end end)
 	
@@ -227,6 +232,30 @@ function PANEL:Init()
 					end
 	
 	timer.Create(Holopad.AUTOSAVE_TIMER, Holopad.AutosaveWait, 0, autosave, self)
+	
+	
+	
+	// CTRL+A : Select all
+	Holopad.Keyboard.AddBind({key = KEY_A, ctrl = true},
+		function()
+			if !self:GetViewPanel():IsActive() then return end
+			local mdl = self:GetModelObj()
+			local dyns = mdl:getType(Holopad.DynamicEnt, true)
+			for i=1, #dyns do
+				mdl:selectEnt(dyns[i])
+			end
+		end)
+	
+	// DEL : Delete selected
+	Holopad.Keyboard.AddBind({key = KEY_DELETE},
+		function()
+			if !self:GetViewPanel():IsActive() then return end
+			local mdl = self:GetModelObj()
+			local sel = mdl:getSelectedEnts()
+			for i=1, #sel do
+				if mdl:contains(sel[i]) then mdl:removeEntity(sel[i]) end
+			end
+		end)
 	
 end
 

@@ -82,5 +82,9 @@ if Holopad.Persist then
 	if !Holopad.Persist.IsRegistered("Holopad.ViewportLighting") then
 		Holopad.Persist.RegisterGlobal("Holopad.ViewportLighting")
 	end
+	
+	if !Holopad.Persist.IsRegistered("Holopad.BACKGROUND_COLOUR") then
+		Holopad.Persist.RegisterGlobal("Holopad.BACKGROUND_COLOUR")
+	end
 
 end

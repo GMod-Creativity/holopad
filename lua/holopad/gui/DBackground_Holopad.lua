@@ -19,14 +19,14 @@ function PANEL:Init()
 
 	self:SetPaintBackgroundEnabled( false )
     self:SetPaintBorderEnabled( false )
-	self.colour = Holopad.BACKGROUND_COLOUR()
+	self.colour = Holopad.BACKGROUND_COLOUR
 
 end
 
 
 
 function PANEL:Paint()
-	local col = self.colour
+	local col = Holopad.BACKGROUND_COLOUR
 	surface.SetDrawColor( col.r, col.g, col.b, col.a )
 	surface.DrawRect( 0, 0, self:GetWide(), self:GetTall() )
 	
@@ -43,7 +43,8 @@ end
 			desired colour of the panel
  */
 function PANEL:SetColour(colour)
-	self.colour = colour or Holopad.BACKGROUND_COLOUR()
+	if !colour then self.colour = Holopad.BACKGROUND_COLOUR end
+	self.colour = colour
 end
 
 	

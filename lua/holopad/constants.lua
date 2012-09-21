@@ -76,7 +76,7 @@ Holopad.ENT_DEPARENTALLHOOK	= "Holopad_Ent_DeparentAll "
 Holopad.MODEL_UPDATE	= "Holopad_Model_Update "
 
 // default background colour for the holopad gui.
-Holopad.BACKGROUND_COLOUR	= function() return Color(50, 50, 50, 255) end
+Holopad.BACKGROUND_COLOUR	= Color(50, 50, 50, 255)
 
 // lolol (grabby dongle settings)
 Holopad.DONGLE_LENGTH = 50

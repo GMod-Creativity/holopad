@@ -128,6 +128,17 @@ end
 
 
 
+
+/**
+	Return:	Boolean
+		true if this Model contains the passed Entity
+ */
+function this:contains(ent)
+	return table.HasValue(self.entities, ent)
+end
+
+
+
 /**
 	Return a list of all added Entities (contiguity not guaranteed if returning reference)
 	Args;
