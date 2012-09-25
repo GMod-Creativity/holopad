@@ -58,8 +58,9 @@ function PANEL:Init()
 	local parent	 = self:GetParent()
 	local pwidth	 = parent:GetWide()
 	local parx, pary = parent:GetPos()
-	self:SetPos(parx + pwidth/2 - self.WindowX/2, pary)
-	self:MoveBelow(parent, 1)
+	//self:SetPos(parx + pwidth/2 - self.WindowX/2, pary)
+	//self:MoveBelow(parent, 1)
+	self:Center()
 	
 	self:MakePopup()
 	

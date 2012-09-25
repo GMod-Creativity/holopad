@@ -89,35 +89,46 @@ end
 
 /**
 	Used to build a parent tree using Entities.
-	Tree takes the form of {Parent = {Children = {...}, ...}, ...}
+	Tree takes the form of {Parent = {Child	= {...}, ...}, ...}
 	Args;
 		parenttree	Table
 			The tree so far
 		v	Holopad.Entity
-			The Entity to add to the table
+			The Entity to add to the tree
  */
 function lib.addToTree(parenttree, v)
+	//Msg("Adding " .. tostring(v) .. " to tree with parent " .. (v:getParent() and (tostring(v:getParent()) .. " (" .. v:getParent():getName() .. ")") or "nil") .. "\n")
 	if !v:getParent() then
-		parenttree[v] = {}
+		if !parenttree[v] then
+			parenttree[v] = {}
+		end
 		return
 	end
 	
 	local heirlist = {}
+	//local debug = {}
 	local cur = v
 	while cur != nil do
 		heirlist[#heirlist+1] = cur
+		//debug[#debug+1] = tostring(cur)
 		cur = cur:getParent()
 	end
+	//Msg("\tHeirlist: " .. table.concat(debug, ", ") .. "\n")
 	
 	local curnode = parenttree
 	for i=#heirlist, 1, -1 do
 		cur = heirlist[i]
+		//Msg("\t\tElement " .. i .. ": " .. tostring(cur) .. " (" .. cur:getName() .. ") in curnode " .. tostring(curnode) .. "\n")
 		if curnode[cur] then
 			curnode = curnode[cur]
+			//Msg("\t\t\tAssigned " .. tostring(cur) .. " to " .. tostring(curnode) .. "\n")
 		else
 			curnode[cur] = {}
+			//Msg("\t\t\tCreated " .. tostring(cur) .. " within " .. tostring(curnode) .. "\n")
 			curnode = curnode[cur]
+			//Msg("\t\t\tAssigned " .. tostring(cur) .. " to " .. tostring(curnode) .. "\n")
 		end
+		//Msg("\n")
 	end
 end
 
@@ -135,12 +146,18 @@ end
 function lib.modelToList(modelobj)
 	local parenttree = {}
 	local all = modelobj:getAll()
+	local exportables = #all
 
 	for k, v in pairs(all) do	// generate parent tree
 		if v.exportable then	// TODO: guarantee that non-exportables don't get exported due to exportable child
 			lib.addToTree(parenttree, v)
+		else
+			print("Skipping non-exportable ent " .. v)
+			exportables = exportables - 1
 		end
 	end
+	
+	//PrintTable(parenttree)
 	
 	local ret, agenda = {}, {}
 	for k, v in pairs(parenttree) do	// prime the agenda (breadth-first traversal)
@@ -156,6 +173,9 @@ function lib.modelToList(modelobj)
 		ret[#ret+1] = curval[1]
 		curind = curind+1
 	end
+	
+	if #ret != exportables then Error("SAVE ERROR: Input count does not match output count! (" .. #all .. " vs " .. #ret .. ")  Aborting...\n") end
+	print(#all .. " vs " .. #ret)
 	
 	return ret
 end

@@ -34,35 +34,23 @@ function PANEL:DoClick()
 		local submenu1 = menu:AddSubMenu( "View Modes" )
 	
 			submenu1:AddOption( "Coloured Lights", function()
-				viewport:resetRenderSettings()
-				viewport:SetAmbientLight( Color( 255, 255, 255 ) )
-				viewport:SetDirectionalLight( BOX_FRONT,	Color( 255, 0, 0 ) )
-				viewport:SetDirectionalLight( BOX_BACK,		Color( 0, 255, 255 ) )
-				viewport:SetDirectionalLight( BOX_RIGHT,	Color( 0, 255, 0 ) )
-				viewport:SetDirectionalLight( BOX_LEFT,		Color( 255, 0, 255 ) )
-				viewport:SetDirectionalLight( BOX_TOP,		Color( 0, 0, 255 ) )
-				viewport:SetDirectionalLight( BOX_BOTTOM,	Color( 255, 255, 0 ) )
-				Holopad.ViewportLighting = "coloured"
+				viewport:SetLightingScheme("coloured")
 			end)
 			
 			submenu1:AddOption( "White Lights", function()
-				viewport:resetRenderSettings()
-				viewport:SetAmbientLight( Color( 50, 50, 50 ) )
-				viewport:SetDirectionalLight( BOX_RIGHT, Color( 255, 255, 255 ) )
-				viewport:SetDirectionalLight( BOX_TOP, Color( 255, 255, 255 ) )
-				Holopad.ViewportLighting = "white"
+				viewport:SetLightingScheme("white")
+			end)
+
+			submenu1:AddOption( "White Lights 2", function()
+				viewport:SetLightingScheme("white2")
 			end)
 			
 			submenu1:AddOption( "Shadowless", function()
-				viewport:resetRenderSettings()
-				viewport:SetAmbientLight( Color( 255, 255, 255 ) )
-				Holopad.ViewportLighting = "shadowless"
+				viewport:SetLightingScheme("shadowless")
 			end)
 			
 			submenu1:AddOption( "Wireframe", function()
-				viewport:resetRenderSettings()
-				viewport:SetOverrideMaterial("models/wireframe")
-				Holopad.ViewportLighting = "wireframe"
+				viewport:SetLightingScheme("wireframe")
 			end)
 		
 		

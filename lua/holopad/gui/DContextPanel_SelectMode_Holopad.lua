@@ -290,8 +290,9 @@ function PANEL:createControls()
 		
 		if #selent == 0 then return end
 		
+		Msg("Parenting " .. #selent .. " ents to " .. ent:getName() .. "\n\n\n")
 		for _, v in pairs(selent) do
-			if v:class() != Holopad.ClipPlane and v:instanceof(Holopad.DynamicEnt) then
+			if v:class() != Holopad.ClipPlane and v:instanceof(Holopad.DynamicEnt) and v != ent then
 				v:setParent(ent)
 			end
 		end

@@ -12,21 +12,28 @@
 
 
 Holopad = {}
-local running = false
+Holopad.Running = false
+Holopad.Window = nil
 local window, success
 
 local function Cmds(ply,command,args)
 
-	if running then window:Close() Error("Holopad is already running!") return end
-	running = true
+	if Holopad.Running then window:Close() Error("Holopad is already running!") return end
+	Holopad.Running = true
 	
 	Holopad.Persist.Retrieve()
 	
 	success, window = pcall(vgui.Create, "DHolopad")
 	if !success then window:Close() Error("window creation fail!") end
+	Holopad.Window = window
 	
 	local oldclose = window.Close
-	window.Close = function(self) running = false Holopad.Persist.Persist() oldclose(self) end
+	window.Close = 	function(self)
+						Holopad.Running = false
+						Holopad.Persist.Persist()
+						oldclose(self)
+						Holopad.Window = nil
+					end
 	//*
 	ErrorNoHalt("THIS IS A BETA BUILD OF HOLOPAD 2!\n")
 	ErrorNoHalt("Please try to abuse the system to cause errors.\n")

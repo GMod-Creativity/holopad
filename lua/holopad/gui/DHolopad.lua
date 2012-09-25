@@ -64,12 +64,14 @@ function PANEL:Init()
 	
 	self.ModelObj = Holopad.Model:New()
 	
+	local openedpath = nil
+
 	local savebutton = self:addButton("holopad/save", 		"Save to Project File...",	function()
 																		if self.fileDialogue then Error("A file dialogue is already open.  Please use it or close it ok thanks!") return end
 																		self.fileDialogue = vgui.Create("DFileDialogue_Holopad", self)
 																		self.fileDialogue:SetRootFolder("Holopad", true)
 																		self.fileDialogue:SetTitle("Holopad 2; Save to PRJ")
-																		self.fileDialogue:SetCallback(function(success, filepath) self.fileDialogue = nil if success then Holopad.PRJ.Save( self:GetModelObj(), filepath, true ) end end)
+																		self.fileDialogue:SetCallback(function(success, filepath) self.fileDialogue = nil if success then Holopad.PRJ.Save( self:GetModelObj(), filepath, true ) openedpath = filepath end end)
 																	end)
 																	
 	local savemenubutton = vgui.Create( "DCentredImageButton", savebutton )
@@ -86,7 +88,8 @@ function PANEL:Init()
 	savemenubutton:SetPos(savebutton:GetWide() - savemenubutton:GetWide(), 0)
 	
 																	
-	self:addButton("holopad/load", 		"Load a Project File...", 	function()
+	local loadbutton = self:addButton("holopad/load", 		"Load a Project File...",
+																	function()
 																		if self.fileDialogue then Error("A dialogue is already open.  Please use it or close it ok thanks!") return end
 																		self.fileDialogue = vgui.Create("DFileDialogue_Holopad", self)
 																		self.fileDialogue:SetRootFolder("Holopad", true)
@@ -98,6 +101,7 @@ function PANEL:Init()
 																												local newmdl = Holopad.PRJ.Load( filepath )
 																												if newmdl then
 																													self:SetModelObj(newmdl)
+																													openedpath = filepath
 																												end
 																											end
 																										end)
@@ -238,24 +242,83 @@ function PANEL:Init()
 	// CTRL+A : Select all
 	Holopad.Keyboard.AddBind({key = KEY_A, ctrl = true},
 		function()
-			if !self:GetViewPanel():IsActive() then return end
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
 			local mdl = self:GetModelObj()
-			local dyns = mdl:getType(Holopad.DynamicEnt, true)
+			local dyns = mdl:getType(Holopad.Hologram)
 			for i=1, #dyns do
 				mdl:selectEnt(dyns[i])
 			end
+		end)
+
+	// CTRL+S : Save (as)
+	Holopad.Keyboard.AddBind({key = KEY_S, ctrl = true},
+		function()
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			if openedpath then
+				Holopad.PRJ.Save( self:GetModelObj(), openedpath, true )
+			else
+				savebutton.OnMousePressed()
+			end
+		end)
+
+	// CTRL+O: Load file
+	Holopad.Keyboard.AddBind({key = KEY_O, ctrl = true},
+		function()
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			loadbutton.OnMousePressed()
+		end)
+
+	// CTRL+N: New file
+	Holopad.Keyboard.AddBind({key = KEY_N, ctrl = true},
+		function()
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			Holopad.PRJ.Save( self:GetModelObj(), Holopad.AUTOSAVE_DIR .. "/autosave_onclose.txt", true )
+			self:SetModelObj(Holopad.Model:New())
 		end)
 	
 	// DEL : Delete selected
 	Holopad.Keyboard.AddBind({key = KEY_DELETE},
 		function()
-			if !self:GetViewPanel():IsActive() then return end
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
 			local mdl = self:GetModelObj()
 			local sel = mdl:getSelectedEnts()
 			for i=1, #sel do
 				if mdl:contains(sel[i]) then mdl:removeEntity(sel[i]) end
 			end
 		end)
+
+
+	local function rAddClone(clone, model)
+		model:addEntity(clone)
+		local kids = clone:getChildren()
+		for _, v in pairs(kids) do
+			rAddClone(v, model)
+		end
+	end
+	
+	
+	local function dholoClone()
+		if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+		local model	= self:GetModelObj()
+		local selent = model:getSelectedEnts()
+		
+		if #selent == 0 then return end
+		
+		model:deselectAll()
+		
+		local clone
+		for _, v in pairs(selent) do
+			if v:class() != Holopad.ClipPlane and v:instanceof(Holopad.DynamicEnt) then
+				clone = v:clone()
+				rAddClone(clone, model)
+				model:selectEnt(clone)
+			end
+		end
+	end
+
+
+	// CTRL+C : Clone selected
+	Holopad.Keyboard.AddBind({key = KEY_C, ctrl = true}, dholoClone)
 	
 end
 

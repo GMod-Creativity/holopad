@@ -15,7 +15,7 @@
 
 
 
-Holopad.Keyboard = {binds = {}, binddata = {}, pressed = {}}
+Holopad.Keyboard = {binds = {}, repeaters = {}, binddata = {}, pressed = {}}
 local this = Holopad.Keyboard
 
 
@@ -72,10 +72,12 @@ end
 			example: CTRL+A -> {key=KEY_A, ctrl=true}
 		func	Function
 			function to bind to the key
+		repeating	Boolean
+			true if bind should repeat during keypress else false for press trigger
 	Return:	Function
 		the passed function
  */
-function this.AddBind(keydata, func)
+function this.AddBind(keydata, func, repeating)
 	local idx = keydataToKey(keydata)
 	local tbl = this.binds[idx]
 	
@@ -86,6 +88,9 @@ function this.AddBind(keydata, func)
 	end
 	
 	tbl[func] = true
+	if repeating then
+		this.repeaters[func] = true
+	end
 	
 	return func
 end
@@ -140,6 +145,7 @@ function this.RemoveBind(keydata, func)
 	if func then
 		if tbl[func] then
 			tbl[func] = nil
+			this.repeaters[func] = nil
 			if #tbl == 0 then
 				this.binds[idx] = nil
 				this.binddata[tbl] = nil
@@ -161,7 +167,9 @@ end
 	Required because KEY_* enums are only compatible with input.IsKeyDown
  */
 function this.DoThink()
-	local keydata, matched
+	if !Holopad.Running then return end
+	
+	local keydata, matched, pressed
 	local ctrl, alt, shift = input.IsKeyDown(KEY_LCONTROL) or nil, input.IsKeyDown(KEY_LALT) or nil, input.IsKeyDown(KEY_LSHIFT) or nil
 	
 	for k, bind in pairs(this.binds) do
@@ -175,12 +183,13 @@ function this.DoThink()
 		elseif !input.IsKeyDown(keydata.key) then matched = false end
 		
 		if matched then
-			if !this.pressed[k] then // no spam tyvm
-				this.pressed[k] = true
-				for func, _ in pairs(bind) do
-					func()
+			pressed = this.pressed[k]	
+			for func, _ in pairs(bind) do	// TODO: optimize (repeater subtables?)
+				if     this.repeaters[func] then pcall(func)
+				elseif !pressed             then pcall(func)
 				end
-			end			
+			end	
+			this.pressed[k] = true
 		else
 			this.pressed[k] = nil
 		end

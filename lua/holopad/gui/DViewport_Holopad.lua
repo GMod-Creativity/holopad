@@ -85,6 +85,7 @@ persistlight["coloured"] =
 		viewport:SetDirectionalLight( BOX_LEFT,		Color( 255, 0, 255 ) )
 		viewport:SetDirectionalLight( BOX_TOP,		Color( 0, 0, 255 ) )
 		viewport:SetDirectionalLight( BOX_BOTTOM,	Color( 255, 255, 0 ) )
+		Holopad.ViewportLighting = "coloured"
 	end
 persistlight["white"] =
 	function(viewport)
@@ -92,16 +93,27 @@ persistlight["white"] =
 		viewport:SetAmbientLight( Color( 50, 50, 50 ) )
 		viewport:SetDirectionalLight( BOX_RIGHT, Color( 255, 255, 255 ) )
 		viewport:SetDirectionalLight( BOX_TOP, Color( 255, 255, 255 ) )
+		Holopad.ViewportLighting = "white"
+	end
+persistlight["white2"] =
+	function(viewport)
+		viewport:resetRenderSettings()
+		viewport:SetAmbientLight( Color( 50, 50, 50 ) )
+		viewport:SetDirectionalLight( BOX_LEFT, Color( 255, 255, 255 ) )
+		viewport:SetDirectionalLight( BOX_BOTTOM, Color( 255, 255, 255 ) )
+		Holopad.ViewportLighting = "white2"
 	end
 persistlight["shadowless"] = 
 	function(viewport)
 		viewport:resetRenderSettings()
 		viewport:SetAmbientLight( Color( 255, 255, 255 ) )
+		Holopad.ViewportLighting = "shadowless"
 	end
 persistlight["wireframe"] = 
 	function(viewport)
 		viewport:resetRenderSettings()
 		viewport:SetOverrideMaterial("models/wireframe")
+		Holopad.ViewportLighting = "wireframe"
 	end
 	
 	
@@ -114,6 +126,7 @@ function PANEL:Init()
 	if !ClientsideModel then Error("Can't create CSModels!") return end
 
 	self.camDist = 100
+	self.camhammer = false
 	self.vCamPos = Vector(0, 0, 0)
 	self.vLookatPos = Vector(0, 0, 10)
     self.DirectionalLight = {}
@@ -158,7 +171,62 @@ function PANEL:Init()
 	
 	local plighting = persistlight[Holopad.ViewportLighting] or persistlight["coloured"]
 	plighting(self)
+
+	/*	// TODO: these
+	// W: up
+	Holopad.Keyboard.AddBind({key = KEY_W},
+		function()
+			if !self:GetParent():IsActive() then return end
+			if self.camhammer then // lol
+			else
+				self:SetCamAng(self:GetCamAng() - Angle(Holopad.InvertCameraY, 0, 0))
+			end
+		end, true)
+
+	// S: down
+	Holopad.Keyboard.AddBind({key = KEY_S},
+		function()
+			if !self:GetParent():IsActive() then return end
+			if self.camhammer then // lol
+			else
+				self:SetCamAng(self:GetCamAng() + Angle(Holopad.InvertCameraY, 0, 0))
+			end
+		end, true)
+
+	// A: left
+	Holopad.Keyboard.AddBind({key = KEY_A},
+		function()
+			if !self:GetParent():IsActive() then return end
+			if self.camhammer then // lol
+			else
+				self:SetCamAng(self:GetCamAng() - Angle(0, Holopad.InvertCameraX, 0))
+			end
+		end, true)
+
+	// D: right
+	Holopad.Keyboard.AddBind({key = KEY_D},
+		function()
+			if !self:GetParent():IsActive() then return end
+			if self.camhammer then // lol
+			else
+				self:SetCamAng(self:GetCamAng() + Angle(0, Holopad.InvertCameraX, 0))
+			end
+		end, true)
+	//*/
 	
+end
+
+
+
+/**
+	Set the light scheme to one of the preset lighting schemes, or default if scheme is not registered.
+	Args;
+		scheme	String
+			scmeme name or nil/arbitrary for default
+ */
+function PANEL:SetLightingScheme(scheme)
+	local plighting = persistlight[scheme] or persistlight["coloured"]
+	plighting(self)
 end
 
 
@@ -543,9 +611,7 @@ function PANEL:SetCamAng(angle, dist)
 	self.reject = Angle(0, angle.y, angle.r)
 	
 	// if pitching > +-89.99... degrees, don't do that please.  wizardry because angles make me sad
-	if math.acos(self.reject:Forward():Dot(angle:Forward())) > 1.57 then 
-		return
-	end
+	if math.acos(self.reject:Forward():Dot(angle:Forward())) > 1.57 then return end
 	
 	if dist then self.camDist = dist end
 	
