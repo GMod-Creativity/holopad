@@ -253,15 +253,6 @@ function PANEL:createControls()
 	end
 	
 	
-	local function rAddClone(clone, model)
-		model:addEntity(clone)
-		local kids = clone:getChildren()
-		for _, v in pairs(kids) do
-			rAddClone(v, model)
-		end
-	end
-	
-	
 	local function dholoClone()
 		local model	= self:GetModelObj()
 		local selent = model:getSelectedEnts()
@@ -272,9 +263,8 @@ function PANEL:createControls()
 		
 		local clone
 		for _, v in pairs(selent) do
-			if v:class() != Holopad.ClipPlane and v:instanceof(Holopad.DynamicEnt) then
-				clone = v:clone()
-				rAddClone(clone, model)
+			if v:instanceof(Holopad.DynamicEnt) then
+				clone = v:cloneToModel(nil, model)
 				model:selectEnt(clone)
 			end
 		end

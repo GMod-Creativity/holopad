@@ -138,6 +138,7 @@ end
 		a copy of this Entity
  */
 function this:cloneToModel(parentoverride, model, nokids, noclips)
+	print("holo ctm")
 	local clone = this:New(self:getPos(), self:getAng(), self:getName(), self:getModel(), self:getColour(), self:getMaterial(), self:getScale())
 	clone:setParent(parentoverride or self:getParent())
 	model:addEntity(clone)
@@ -146,7 +147,11 @@ function this:cloneToModel(parentoverride, model, nokids, noclips)
 	
 	local kids  = self:getChildren(true)
 	
-	if nokids then
+	if !(noclips and nokids) then
+		for _, v in pairs(kids) do
+			v:cloneToModel(clone, model, true)
+		end
+	elseif nokids then
 		for _, v in pairs(kids) do
 			if v:class() == Holopad.ClipPlane then
 				v:cloneToModel(clone, model, true)

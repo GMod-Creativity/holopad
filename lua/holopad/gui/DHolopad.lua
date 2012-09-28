@@ -286,15 +286,6 @@ function PANEL:Init()
 				if mdl:contains(sel[i]) then mdl:removeEntity(sel[i]) end
 			end
 		end)
-
-
-	local function rAddClone(clone, model)
-		model:addEntity(clone)
-		local kids = clone:getChildren()
-		for _, v in pairs(kids) do
-			rAddClone(v, model)
-		end
-	end
 	
 	
 	local function dholoClone()
@@ -308,9 +299,10 @@ function PANEL:Init()
 		
 		local clone
 		for _, v in pairs(selent) do
-			if v:class() != Holopad.ClipPlane and v:instanceof(Holopad.DynamicEnt) then
-				clone = v:clone()
-				rAddClone(clone, model)
+			//if v:class() != Holopad.ClipPlane and v:instanceof(Holopad.DynamicEnt) then
+			if v:instanceof(Holopad.DynamicEnt) then
+				print("calling ctm")
+				clone = v:cloneToModel(nil, model)
 				model:selectEnt(clone)
 			end
 		end
