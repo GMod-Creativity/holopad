@@ -152,7 +152,7 @@ function lib.modelToList(modelobj)
 		if v.exportable then	// TODO: guarantee that non-exportables don't get exported due to exportable child
 			lib.addToTree(parenttree, v)
 		else
-			print("Skipping non-exportable ent " .. v)
+			print("Skipping non-exportable ent " .. tostring(v))
 			exportables = exportables - 1
 		end
 	end

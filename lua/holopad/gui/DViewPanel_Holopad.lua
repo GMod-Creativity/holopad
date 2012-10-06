@@ -65,6 +65,7 @@ function PANEL:Init()
 
 	self.Viewport = vgui.Create("DViewport_Holopad", self.Background)
 	self.Viewport:SetSize( self.Background:GetWide(), self.Background:GetTall() )
+	self.Viewport:SetViewPanel(self)
 	
 	self.GlassPane = vgui.Create("DGlassPane_Holopad", self.Viewport)
 	self.GlassPane:SetSize(self.Viewport:GetWide(), self.Viewport:GetTall())

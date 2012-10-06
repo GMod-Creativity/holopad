@@ -94,6 +94,7 @@ function PANEL:Init()
 	local exporterlist= vgui.Create( "DMultiChoice", addpanel)
 	exporterlist:SetPos(5, ypos2)
 	exporterlist:SetSize( 270, 20 )
+	exporterlist:AddChoice("Export 3 (Export 2 with local positions)", "E2v3")
 	exporterlist:AddChoice("Export 2 (Spawn by loop, arrays, unlimited)", "E2")
 	exporterlist:AddChoice("Old Export (Basic spawn code, limited)", "E2old")
 	exporterlist.OnSelect = function(self, i, str, val) self.SelectedExporter = val end

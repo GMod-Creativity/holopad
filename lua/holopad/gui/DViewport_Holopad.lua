@@ -172,45 +172,69 @@ function PANEL:Init()
 	local plighting = persistlight[Holopad.ViewportLighting] or persistlight["coloured"]
 	plighting(self)
 
-	/*	// TODO: these
+	//*	// TODO: these
 	// W: up
+	Holopad.Keyboard.AddBind({key = KEY_UP},
+		function()
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			self:SetCamAng(self:GetCamAng() - Angle(Holopad.InvertCameraY, 0, 0), nil, true)
+		end, true)
+
+	// S: down
+	Holopad.Keyboard.AddBind({key = KEY_DOWN},
+		function()
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			self:SetCamAng(self:GetCamAng() + Angle(Holopad.InvertCameraY, 0, 0), nil, true)
+		end, true)
+
+	// A: left
+	Holopad.Keyboard.AddBind({key = KEY_LEFT},
+		function()
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			self:SetCamAng(self:GetCamAng() + Angle(0, Holopad.InvertCameraX, 0), nil, true)
+		end, true)
+
+	// D: right
+	Holopad.Keyboard.AddBind({key = KEY_RIGHT},
+		function()
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			self:SetCamAng(self:GetCamAng() - Angle(0, Holopad.InvertCameraX, 0), nil, true)
+		end, true)
+		
+		
 	Holopad.Keyboard.AddBind({key = KEY_W},
 		function()
-			if !self:GetParent():IsActive() then return end
-			if self.camhammer then // lol
-			else
-				self:SetCamAng(self:GetCamAng() - Angle(Holopad.InvertCameraY, 0, 0))
-			end
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			local camAng = self:GetCamAng()
+			self:SetLookAt(self:GetLookAt() + camAng:Forward()*(self:GetCamDist()/100))
+			self:SetCamAng(camAng)
 		end, true)
 
 	// S: down
 	Holopad.Keyboard.AddBind({key = KEY_S},
 		function()
-			if !self:GetParent():IsActive() then return end
-			if self.camhammer then // lol
-			else
-				self:SetCamAng(self:GetCamAng() + Angle(Holopad.InvertCameraY, 0, 0))
-			end
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			local camAng = self:GetCamAng()
+			self:SetLookAt(self:GetLookAt() - camAng:Forward()*(self:GetCamDist()/100))
+			self:SetCamAng(camAng)
 		end, true)
 
 	// A: left
 	Holopad.Keyboard.AddBind({key = KEY_A},
 		function()
-			if !self:GetParent():IsActive() then return end
-			if self.camhammer then // lol
-			else
-				self:SetCamAng(self:GetCamAng() - Angle(0, Holopad.InvertCameraX, 0))
-			end
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			local camAng = self:GetCamAng()
+			self:SetLookAt(self:GetLookAt() - camAng:Right()*(self:GetCamDist()/100))
+			self:SetCamAng(camAng)
 		end, true)
 
 	// D: right
 	Holopad.Keyboard.AddBind({key = KEY_D},
 		function()
-			if !self:GetParent():IsActive() then return end
-			if self.camhammer then // lol
-			else
-				self:SetCamAng(self:GetCamAng() + Angle(0, Holopad.InvertCameraX, 0))
-			end
+			if !(self:GetViewPanel() and self:GetViewPanel():IsActive()) then return end
+			local camAng = self:GetCamAng()
+			self:SetLookAt(self:GetLookAt() + camAng:Right()*(self:GetCamDist()/100))
+			self:SetCamAng(camAng)
 		end, true)
 	//*/
 	
@@ -257,6 +281,29 @@ end
 
 function PANEL:GetModelObj()
 	return self.ModelObj
+end
+
+
+
+/**
+	Set the Viewport's associated ViewPanel to the argument.
+	Args;
+		view	DViewPanel_Holopad
+			Viewport to assign to this
+ */
+function PANEL:SetViewPanel(view)
+	self.ViewPanel = view
+end
+
+
+
+/**
+	Get the Viewport's associated ViewPanel.
+	Return:	DViewPanel_Holopad
+			ViewPanel containing this
+ */
+function PANEL:GetViewPanel()
+	return self.ViewPanel
 end
 
 
@@ -604,7 +651,7 @@ end
 		dist	Number
 			the desired camera distance from the look position.
  */
-function PANEL:SetCamAng(angle, dist)
+function PANEL:SetCamAng(angle, dist, fps)
 	
 	dist = dist or self.camDist
 	self.Transformer = nil
@@ -615,7 +662,12 @@ function PANEL:SetCamAng(angle, dist)
 	
 	if dist then self.camDist = dist end
 	
-	self.vCamPos = self.vLookatPos - angle:Forward()*self.camDist
+	if !fps then
+		self.vCamPos = self.vLookatPos - angle:Forward()*self.camDist
+	else
+		self.vLookatPos = self.vCamPos + angle:Forward()*self.camDist
+	end
+	
 	
 end
 

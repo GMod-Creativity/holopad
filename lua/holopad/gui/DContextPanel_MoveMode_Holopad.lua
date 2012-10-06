@@ -27,7 +27,7 @@ function PANEL:Init()
 	self:ShowCloseButton(false)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 200, 335
+	self.ContentX, self.ContentY	= 200, 350
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	self.ControlType = "move"
@@ -256,7 +256,19 @@ function PANEL:createControls()
 	MoveWangLabel:SetPos(5, ypos)
 	MoveWangLabel:SizeToContents()
 	
-	ypos = ypos + MoveWangLabel:GetTall() + 5
+	local saveColourButton = vgui.Create("DButton", movepanel)
+	saveColourButton:SetText( "Save" )
+	saveColourButton.DoClick = function() self.storedColour = Vector(wangX:GetValue(), wangY:GetValue(), wangZ:GetValue()) end
+	saveColourButton:SetSize(30, MoveWangLabel:GetTall() + 2)
+	saveColourButton:SetPos(23, 21)
+	
+	local loadColourButton = vgui.Create("DButton", movepanel)
+	loadColourButton:SetText( "Load" )
+	loadColourButton.DoClick = function() local pos = self.storedColour		wangX:SetValue(pos.x)	wangY:SetValue(pos.y)	wangZ:SetValue(pos.z) end
+	loadColourButton:SetSize(30, MoveWangLabel:GetTall() + 2)
+	loadColourButton:SetPos(58, 21)
+	
+	ypos = ypos + MoveWangLabel:GetTall() + 20
 	local butpos = ypos
 	
 	local xpanel = vgui.Create("DPanel", movepanel)
