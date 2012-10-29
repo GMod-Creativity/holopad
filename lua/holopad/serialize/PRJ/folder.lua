@@ -12,6 +12,5 @@
 
 print("Including holopad/serialize/PRJ")
 
-include("holopad/serialize/PRJ/lib_PRJ2.lua")
 include("holopad/serialize/PRJ/lib_PRJ3.lua")
 

@@ -18,13 +18,14 @@ local window, success
 
 local function Cmds(ply,command,args)
 
-	if Holopad.Running then window:Close() Error("Holopad is already running!") return end
+	if Holopad.Running then Error("Holopad is already running!") return end
 	Holopad.Running = true
 	
 	Holopad.Persist.Retrieve()
 	
-	success, window = pcall(vgui.Create, "DHolopad")
-	if !success then window:Close() Error("window creation fail!") end
+	//success, window = pcall(vgui.Create, "DHolopad")
+	//if !success then window:Close() Error("window creation fail!") end
+	window = vgui.Create("DHolopad")
 	Holopad.Window = window
 	
 	local oldclose = window.Close

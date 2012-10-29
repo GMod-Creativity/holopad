@@ -176,7 +176,7 @@ function PANEL:GetMarkerSize(ent)
 	local sizes		= self.Viewport:GetSizeOf(ent)
 	local minobb	= math.min(math.abs(sizes.x), math.abs(sizes.y), math.abs(sizes.z))
 	local dist		= self.Viewport:GetCamDist(ent)
-	local size		= math.Rad2Deg(math.atan(minobb / dist)) / self.Viewport:GetFOV()
+	local size		= math.deg(math.atan(minobb / dist)) / self.Viewport:GetFOV()
 	size = math.Clamp(size*self:GetWide()*0.8, 16, 128)
 	return size
 end
@@ -250,8 +250,8 @@ end
 local function dongpos(view, dir, centrepos, dirpos)
 	if !(centrepos && dirpos) then ErrorNoHalt("tried getting dongpos using a nil " .. (!centrepos and "centrepos" or "dirpos") .. " screenvector") return Vector(0, 0, 0) end
 	local antidot = math.sin(math.acos(view:Dot(dir)))
-	local posdiff = dirpos - centrepos
-	local pos = centrepos + posdiff:Normalize()*Holopad.DONGLE_LENGTH*antidot
+	local posdiff = (dirpos - centrepos):GetNormalized()
+	local pos = centrepos + posdiff*Holopad.DONGLE_LENGTH*antidot
 	
 	return pos
 end
@@ -333,7 +333,7 @@ end
 
 function PANEL:drawDongleSingle(cenpos, dir, colour, texture, screencen, screendong)
 	
-	dir = dir:Normalize()
+	dir = dir:GetNormalized()
 	
 	local x, y = self:CursorPos()
 	local mvec = Vector(x,  y, 0)

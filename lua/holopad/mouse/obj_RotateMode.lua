@@ -122,7 +122,7 @@ function this:leftDragged(pass, lpos, delta)
 	if !(svent && svdng) then Error("Tried to rotate an Entity but " .. (!svent and "Entity's screen position" or "Dongle's screen position") .." was undefined!") end
 	
 	local svdir = svdng - svent
-	local dir = math.Rad2Deg( math.acos( svdir:GetNormalized():Dot( Vector(dx, dy, 0):Normalize() ))) >= 90 and 1 or -1
+	local dir = math.deg( math.acos( svdir:GetNormalized():Dot( Vector(dx, dy, 0):GetNormalized() ))) >= 90 and 1 or -1
 	
 	local newang = dragent:getAng()
 	newang:RotateAroundAxis(dongledir, (Vector(dx, dy, 0):Length()*dir)/4)

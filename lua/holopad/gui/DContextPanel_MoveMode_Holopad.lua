@@ -27,7 +27,7 @@ function PANEL:Init()
 	self:ShowCloseButton(false)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 200, 350
+	self.ContentX, self.ContentY	= 210, 370
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	self.ControlType = "move"
@@ -137,7 +137,7 @@ function PANEL:createControls()
 		
 		if #sel != 1 then
 			GridCenButton:SetText("Select one holo!")
-			timer.Simple(3, GridCenButton.SetText, GridCenButton, "Centre Grid on Holo")
+			timer.Simple(3, function() GridCenButton:SetText("Centre Grid on Holo") end)
 			return
 		end
 		sel = sel[1]
@@ -159,7 +159,7 @@ function PANEL:createControls()
 		
 		if #sel != 1 then
 			GridLocalButton:SetText("Select one holo!")
-			timer.Simple(3, GridLocalButton.SetText, GridLocalButton, "Orient Grid to Holo")
+			timer.Simple(3, function() GridLocalButton:SetText("Orient Grid to Holo") end)
 			return
 		end
 		sel = sel[1]
@@ -251,10 +251,12 @@ function PANEL:createControls()
 	
 	MoveWangLabel = vgui.Create("DLabel", movepanel)
 	MoveWangLabel:SetColor(Color(255,255,255))
-	MoveWangLabel:SetFont("default")
+	//MoveWangLabel:SetFont("default")
 	MoveWangLabel:SetText("World Origin Offset (XYZ)")
 	MoveWangLabel:SetPos(5, ypos)
 	MoveWangLabel:SizeToContents()
+	
+	ypos = ypos + MoveWangLabel:GetTall() + 5
 	
 	local saveColourButton = vgui.Create("DButton", movepanel)
 	saveColourButton:SetText( "Save" )
@@ -268,7 +270,7 @@ function PANEL:createControls()
 	loadColourButton:SetSize(30, MoveWangLabel:GetTall() + 2)
 	loadColourButton:SetPos(58, 21)
 	
-	ypos = ypos + MoveWangLabel:GetTall() + 20
+	ypos = ypos + 20
 	local butpos = ypos
 	
 	local xpanel = vgui.Create("DPanel", movepanel)
@@ -387,7 +389,7 @@ function PANEL:createControls()
 	
 	GridLabel = vgui.Create("DLabel", gridpanel)
 	GridLabel:SetColor(Color(255,255,255))
-	GridLabel:SetFont("default")
+	//GridLabel:SetFont("default")
 	GridLabel:SetText("Grid Separation (glu)")
 	GridLabel:SetPos(5, ypos)
 	GridLabel:SizeToContents()

@@ -69,7 +69,7 @@ function PANEL:Init()
 	timewang.EndWang	=	function(self)
 								Holopad.AutosaveWait = self:GetValue()
 								timer.Destroy(Holopad.AUTOSAVE_TIMER)
-								timer.Create(Holopad.AUTOSAVE_TIMER, Holopad.AutosaveWait, 0, autosave, self)
+								timer.Create(Holopad.AUTOSAVE_TIMER, Holopad.AutosaveWait, 0, function() autosave(self) end)
 								oldendtimewang(self)
 							end
 	timewang:SetMax(600)

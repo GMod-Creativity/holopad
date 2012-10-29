@@ -16,7 +16,7 @@
 		
 */
 
-local DTOR = math.Deg2Rad(1)
+local DTOR = math.rad(1)
 local EPSILON = 0.001
 
 

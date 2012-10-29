@@ -85,7 +85,7 @@ function lib.Save( modelobj, filename, overwrite, options )
 	
 	local path = filename//"Expression2/" .. filename .. ".txt"
 	
-	if (!overwrite && file.Exists(path)) then Error("Unable to export to E2; \"" .. path .. "\" already exists!") return false end
+	if (!overwrite && file.Exists(path, "DATA")) then Error("Unable to export to E2; \"" .. path .. "\" already exists!") return false end
 
 	print("Saving to " .. path.. " in the DATA directory")
 	/*

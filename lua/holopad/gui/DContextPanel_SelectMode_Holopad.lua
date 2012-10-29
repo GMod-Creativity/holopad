@@ -13,7 +13,7 @@
 //*/
 
 
-include("holopad/gui/DColorMixer_Holopad.lua")
+include("holopad/gui/DColorPanel_Holopad.lua")
 include("holopad/gui/DEntityDialogue_Holopad.lua")
 
 
@@ -28,7 +28,7 @@ function PANEL:Init()
 	self:ShowCloseButton(false)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 200, 600
+	self.ContentX, self.ContentY	= 210, 640
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	self.ControlType = "select"
@@ -104,10 +104,9 @@ end
 function PANEL:createControls()
 	
 	local MOVEMAX = 500
-	local colourCube, wangR, wangG, wangB, wangA, setColourButton, saveColourButton, loadColourButton
+	local colourCube, setColourButton
 	local matEntry, setMatButton, matMenuButton, setMdlButton
 	local nameEntry, setNameButton, addClipButton, cloneButton
-	local wanging = false
 	local RED, GREEN, BLUE, ALPHA = 1, 2, 3, 4
 	
 	
@@ -117,7 +116,7 @@ function PANEL:createControls()
 		
 		if #selent == 0 then return end // TODO: move multiple entities as group
 		
-		local col = Color(wangR:GetValue(), wangG:GetValue(), wangB:GetValue(), wangA:GetValue())
+		local col = colourCube:GetColor()
 		for k, v in pairs(selent) do
 			if v:instanceof(Holopad.DynamicEnt) then
 				v:setColour(col)
@@ -226,33 +225,6 @@ function PANEL:createControls()
 	end
 	
 	
-	local dholoCubeChanged = function(cube)
-		local colour = cube:GetColor()
-		if wanging then return end
-		wangR:SetValue(colour.r)
-		wangG:SetValue(colour.g)
-		wangB:SetValue(colour.b)
-		wangA:SetValue(colour.a)
-	end
-	
-	
-	local function wanged()
-		if !(wangR and wangG and wangB and wangA) then return end
-		colourCube:SetColor(Color(wangR:GetValue(), wangG:GetValue(), wangB:GetValue(), wangA:GetValue()))
-	end
-	
-	
-	local function dholoLoadColour()
-		local colour = self.storedColour
-		if !colour then return end
-		wangR:SetValue(colour.r)
-		wangG:SetValue(colour.g)
-		wangB:SetValue(colour.b)
-		wangA:SetValue(colour.a)
-		colourCube:SetColor(colour)
-	end
-	
-	
 	local function dholoClone()
 		local model	= self:GetModelObj()
 		local selent = model:getSelectedEnts()
@@ -335,72 +307,11 @@ function PANEL:createControls()
 	local apppanel = vgui.Create("DPanel")
 	apppanel.Paint = function() end
 	
-	local collabel = vgui.Create("DLabel", apppanel)
-	collabel:SetText("Colour:")
-	collabel:SizeToContents()
-	collabel:SetPos(5, 5)
 	
-	colourCube = vgui.Create( "DColorMixer_Holopad", apppanel )
-	colourCube:SetPos( 5, 10 + collabel:GetTall() )
-	colourCube:SetSize( 140, 100 )
-	colourCube.OnColorChanged = dholoCubeChanged
-
-	wangR = vgui.Create("DNumberWang", apppanel)
-	wangR:SetValue(255)
-	local oldendwangR, oldstartwangR = wangR.EndWang, wangR.StartWang
-	wangR.EndWang	= function(self)	wanging = false		oldendwangR(self)	wanged()	end
-	wangR.StartWang = function(self)	wanging = true		oldstartwangR(self)	end
-	wangR.OnValueChanged = wanged
-	wangR:GetTextArea():SetEditable(true)	// TODO: make typable
-	wangR:GetTextArea().OnEnter = wanged
-	wangR:SetMax(255)
-	wangR:SetMin(0)
-	wangR:SetDecimals(0)
-	wangR:SetSize(55, 20)
-	wangR:SetPos(130, 10 + collabel:GetTall())
+	colourCube = vgui.Create("DColorPanel_Holopad", apppanel)
 	
-	wangG = vgui.Create("DNumberWang", apppanel)
-	wangG:SetValue(0)
-	local oldendwangG, oldstartwangG = wangG.EndWang, wangG.StartWang
-	wangG.EndWang	= function(self)	wanging = false		oldendwangG(self)	wanged()	end
-	wangG.StartWang = function(self)	wanging = true		oldstartwangG(self)	end
-	wangG.OnValueChanged = wanged
-	wangG:GetTextArea():SetEditable(true)	// TODO: make typable
-	wangG:GetTextArea().OnEnter = wanged
-	wangG:SetMax(255)
-	wangG:SetMin(0)
-	wangG:SetDecimals(0)
-	wangG:SetSize(55, 20)
-	wangG:SetPos(130, 10 + collabel:GetTall() + wangR:GetTall() + 6)
 	
-	wangB = vgui.Create("DNumberWang", apppanel)
-	wangB:SetValue(255)
-	local oldendwangB, oldstartwangB = wangB.EndWang, wangB.StartWang
-	wangB.EndWang	= function(self)	wanging = false		oldendwangB(self)	wanged()	end
-	wangB.StartWang = function(self)	wanging = true		oldstartwangB(self)	end
-	wangB.OnValueChanged = wanged
-	wangB:GetTextArea():SetEditable(true)	// TODO: make typable
-	wangB:GetTextArea().OnEnter = wanged
-	wangB:SetMax(255)
-	wangB:SetMin(0)
-	wangB:SetDecimals(0)
-	wangB:SetSize(55, 20)
-	wangB:SetPos(130, 10 + collabel:GetTall() + wangR:GetTall()*2 + 12)
-	
-	wangA = vgui.Create("DNumberWang", apppanel)
-	wangA:SetValue(255)
-	local oldendwangA, oldstartwangA = wangA.EndWang, wangA.StartWang
-	wangA.EndWang	= function(self)	wanging = false		oldendwangA(self)	wanged()	end
-	wangA.StartWang = function(self)	wanging = true		oldstartwangA(self)	end
-	wangA.OnValueChanged = wanged
-	wangA:GetTextArea():SetEditable(false)	// TODO: make typable
-	wangA:SetMax(255)
-	wangA:SetMin(0)
-	wangA:SetDecimals(0)
-	wangA:SetSize(55, 20)
-	wangA:SetPos(130, 10 + collabel:GetTall() + wangR:GetTall()*3 + 18)
-	
-	local ypos = 115 + collabel:GetTall()
+	local ypos = colourCube:GetTall() + 5
 	
 	setColourButton = vgui.Create("DButton", apppanel)
 	setColourButton:SetText( "Set Colour (RGBA)" )
@@ -408,20 +319,7 @@ function PANEL:createControls()
 	setColourButton:SetSize(180, 20)
 	setColourButton:SetPos(5, ypos)
 	
-	ypos = ypos + 30
-	
-	saveColourButton = vgui.Create("DButton", apppanel)
-	saveColourButton:SetText( "Save" )
-	saveColourButton.DoClick = function() self.storedColour = colourCube:GetColor() end
-	saveColourButton:SetSize(30, collabel:GetTall() + 2)
-	saveColourButton:SetPos(10 + collabel:GetWide(), 5)
-	
-	loadColourButton = vgui.Create("DButton", apppanel)
-	loadColourButton:SetText( "Load" )
-	loadColourButton.DoClick = dholoLoadColour
-	loadColourButton:SetSize(30, collabel:GetTall() + 2)
-	loadColourButton:SetPos(45 + collabel:GetWide(), 5)
-	
+	ypos = ypos + 30	
 	
 	local matlabel = vgui.Create("DLabel", apppanel)
 	matlabel:SetText("Material:")
@@ -434,7 +332,7 @@ function PANEL:createControls()
 	matMenuButton = vgui.Create( "DCentredImageButton", apppanel )
 	matMenuButton:SetSize( 20, 20 )
 	matMenuButton:SetText("")
-	matMenuButton:SetImage("gui/silkicons/application_view_detail")
+	matMenuButton:SetImage("icon16/application_view_detail.png")
 	matMenuButton:SetTooltip( "Find Material in List" )
 	matMenuButton.OnMousePressed =	dholoMatMenu
 	matMenuButton:SetDrawBorder( true )
@@ -517,13 +415,7 @@ function PANEL:createControls()
 				end
 			end
 			
-			if !wanging then
-				local colour = selent:getColour()
-				wangR:SetValue(colour.r)
-				wangG:SetValue(colour.g)
-				wangB:SetValue(colour.b)
-				wangA:SetValue(colour.a)
-			end
+			colourCube:SetColor(selent:getColour())
 			
 			setColourButton:SetText("Set Colour (RGBA)")
 			setMatButton:SetText("Set Material Path")

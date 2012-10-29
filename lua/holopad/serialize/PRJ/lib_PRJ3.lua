@@ -144,7 +144,7 @@ function lib.Load(projfile, addto)
 	
 	//local projfile = file.Open("holopad/"..projfile..".txt", "r", "DATA")
 	//print("savefile is "..tostring(savefile))
-	local content = file.Read(projfile)
+	local content = file.Read(projfile, "DATA")
 	local conttable = string.Explode("\n", content)
 	
 	local enttables = von.deserialize(table.concat(conttable, "\n", 2))

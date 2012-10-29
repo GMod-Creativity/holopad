@@ -24,7 +24,7 @@ function PANEL:Init()
 	self:ShowCloseButton(false)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 200, 375
+	self.ContentX, self.ContentY	= 210, 375
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	self.ControlType = "camera"
@@ -88,24 +88,10 @@ function PANEL:createControls()
 	
 	local MOVEMAX = 500
 	local invXCheck, invYCheck, invPXCheck, invPYCheck
-	local wanging = false
-	local colourCube, wangR, wangG, wangB, wangA
+	local colourCube
 	local bgcol = Holopad.BACKGROUND_COLOUR
 	
 	
-	local function wanged()
-		if !(wangR and wangG and wangB and wangA) then return end
-		colourCube:SetColor(Color(wangR:GetValue(), wangG:GetValue(), wangB:GetValue(), wangA:GetValue()))
-	end
-	
-	local dholoCubeChanged = function(cube)
-		local colour = cube:GetColor()
-		if wanging then return end
-		wangR:SetValue(colour.r)
-		wangG:SetValue(colour.g)
-		wangB:SetValue(colour.b)
-		wangA:SetValue(colour.a)
-	end
 	
 	local dholoSetBGCol = function()
 		local colour = colourCube:GetColor()
@@ -189,78 +175,16 @@ function PANEL:createControls()
 	local colpanel = vgui.Create("DPanel")
 	colpanel.Paint = function() end
 	
-	local collabel = vgui.Create("DLabel", colpanel)
-	collabel:SetText("Background Colour:")
-	collabel:SizeToContents()
-	collabel:SetPos(5, 5)
-	
-	colourCube = vgui.Create( "DColorMixer_Holopad", colpanel )
-	colourCube:SetPos( 5, 10 + collabel:GetTall() )
-	colourCube:SetSize( 140, 100 )
-	colourCube.OnColorChanged = dholoCubeChanged
-
-	wangR = vgui.Create("DNumberWang", colpanel)
-	wangR:SetValue(bgcol.r or 50)
-	local oldendwangR, oldstartwangR = wangR.EndWang, wangR.StartWang
-	wangR.EndWang	= function(self)	wanging = false		oldendwangR(self)	wanged()	end
-	wangR.StartWang = function(self)	wanging = true		oldstartwangR(self)	end
-	wangR.OnValueChanged = wanged
-	wangR:GetTextArea():SetEditable(true)	// TODO: make typable
-	wangR:GetTextArea().OnEnter = wanged
-	wangR:SetMax(255)
-	wangR:SetMin(0)
-	wangR:SetDecimals(0)
-	wangR:SetSize(55, 20)
-	wangR:SetPos(130, 10 + collabel:GetTall())
-	
-	wangG = vgui.Create("DNumberWang", colpanel)
-	wangG:SetValue(bgcol.g or 50)
-	local oldendwangG, oldstartwangG = wangG.EndWang, wangG.StartWang
-	wangG.EndWang	= function(self)	wanging = false		oldendwangG(self)	wanged()	end
-	wangG.StartWang = function(self)	wanging = true		oldstartwangG(self)	end
-	wangG.OnValueChanged = wanged
-	wangG:GetTextArea():SetEditable(true)	// TODO: make typable
-	wangG:GetTextArea().OnEnter = wanged
-	wangG:SetMax(255)
-	wangG:SetMin(0)
-	wangG:SetDecimals(0)
-	wangG:SetSize(55, 20)
-	wangG:SetPos(130, 10 + collabel:GetTall() + wangR:GetTall() + 6)
-	
-	wangB = vgui.Create("DNumberWang", colpanel)
-	wangB:SetValue(bgcol.b or 50)
-	local oldendwangB, oldstartwangB = wangB.EndWang, wangB.StartWang
-	wangB.EndWang	= function(self)	wanging = false		oldendwangB(self)	wanged()	end
-	wangB.StartWang = function(self)	wanging = true		oldstartwangB(self)	end
-	wangB.OnValueChanged = wanged
-	wangB:GetTextArea():SetEditable(true)	// TODO: make typable
-	wangB:GetTextArea().OnEnter = wanged
-	wangB:SetMax(255)
-	wangB:SetMin(0)
-	wangB:SetDecimals(0)
-	wangB:SetSize(55, 20)
-	wangB:SetPos(130, 10 + collabel:GetTall() + wangR:GetTall()*2 + 12)
-	
-	wangA = vgui.Create("DNumberWang", colpanel)
-	wangA:SetValue(bgcol.a or 255)
-	local oldendwangA, oldstartwangA = wangA.EndWang, wangA.StartWang
-	wangA.EndWang	= function(self)	wanging = false		oldendwangA(self)	wanged()	end
-	wangA.StartWang = function(self)	wanging = true		oldstartwangA(self)	end
-	wangA.OnValueChanged = wanged
-	wangA:GetTextArea():SetEditable(false)	// TODO: make typable
-	wangA:SetMax(255)
-	wangA:SetMin(0)
-	wangA:SetDecimals(0)
-	wangA:SetSize(55, 20)
-	wangA:SetPos(130, 10 + collabel:GetTall() + wangR:GetTall()*3 + 18)
+	colourCube = vgui.Create( "DColorPanel_Holopad", colpanel )
+	colourCube.OnColorChanged = function() dholoCubeChanged() end
 	
 	local setMdlButton = vgui.Create("DButton", colpanel)
 	setMdlButton:SetText( "Set Background Colour" )
 	setMdlButton.DoClick = dholoSetBGCol
 	setMdlButton:SetSize(180, 20)
-	setMdlButton:SetPos(5, 40 + collabel:GetTall() + wangR:GetTall()*3 + 18)
+	setMdlButton:SetPos(5, 5 + colourCube:GetTall())
 	
-	colpanel:SetSize(230, 70 + collabel:GetTall() + wangR:GetTall()*3 + 18)
+	colpanel:SetSize(230, 70 + colourCube:GetTall())
 	categoryList:AddItem(colpanel)
 
 	return category

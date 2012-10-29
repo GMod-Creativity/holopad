@@ -33,7 +33,7 @@ local PRJVERSION = 3
  */
 function lib.Save( modelobj, path, overwrite )
 
-	if (!overwrite && file.Exists(path)) then Error("Unable to save to PRJ; \"" .. path .. "\" already exists!") return false end
+	if (!overwrite && file.Exists(path, "DATA")) then Error("Unable to save to PRJ; \"" .. path .. "\" already exists!") return false end
 
 	local sublib = Holopad["PRJ"..PRJVERSION]	// save as latest
 	if !sublib then Error("No serializer for PRJ version " .. PRJVERSION .. "!") return false end
@@ -82,7 +82,7 @@ function lib.Load(projfile, addto)
 	if !projfile then return false end
 	
 	//local content = projfile:Read(projfile:Size())
-	local content = file.Read(projfile)
+	local content = file.Read(projfile, "DATA")
 	if !content then Error(projfile.." does not exist!") return end
 	
 	local conttable = string.Explode("\n", content)

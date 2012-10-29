@@ -25,7 +25,7 @@ end
 
 
 
-function PANEL:Paint()
+function PANEL:Paint(w, h)
 	local col = Holopad.BACKGROUND_COLOUR
 	surface.SetDrawColor( col.r, col.g, col.b, col.a )
 	surface.DrawRect( 0, 0, self:GetWide(), self:GetTall() )

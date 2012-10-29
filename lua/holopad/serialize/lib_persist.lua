@@ -112,7 +112,7 @@ end
 	This function may overwrite existing values.
  */
 function lib.Retrieve()
-	local ser = file.Read(Holopad.PERSIST_FILE or "HolopadData/persist.txt")
+	local ser = file.Read(Holopad.PERSIST_FILE or "HolopadData/persist.txt", "DATA")
 	if !ser then Msg("Holopad; No persistence file to retrieve!\n") return end
 	vals = von.deserialize(ser)
 	

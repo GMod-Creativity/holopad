@@ -392,7 +392,7 @@ function this:Apply()
 			end
 	
 			local origin = self.plane:getPos()
-			local normal = self.plane:getNormal():Normalize()
+			local normal = self.plane:getNormal():GetNormalized()
 			
 			local pos = ent:getPos()
 			local ang = ent:getAng()
@@ -441,7 +441,8 @@ function this:Apply()
 			
 			// clip ents through mirror plane
 			if self.doclip then
-				local abovebelow = normal:Dot((v - origin):Normalize()) > 0 and 1 or -1
+				local vorg = (v - origin):GetNormalized()
+				local abovebelow = normal:Dot(vorg) > 0 and 1 or -1
 				local clipang = (normal:Angle():Up() * -1 * abovebelow):Angle()
 				clipang:RotateAroundAxis(clipang:Right(), 180)
 				

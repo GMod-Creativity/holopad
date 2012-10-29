@@ -42,7 +42,7 @@ function this:New()
 	setmetatable(new, meta)
 	
 	new.modelUpdateListener = function(update) this.modelUpdateListener(new, update) end
-	new.dims    = Vector()
+	new.dims    = Vector(1, 1, 1)
 	new.offsets = Vector(0,0,0)	
 	new.orient  = Angle()
 	new.doparentchain = false
@@ -66,7 +66,7 @@ end
 			there will be (x-1, y-1, z-1) copies on the corresponding axes
  */
 function this:SetArrayDimensions(vec)
-	this.dims = vec or Vector()
+	this.dims = vec or Vector(1, 1, 1)
 end
 
 

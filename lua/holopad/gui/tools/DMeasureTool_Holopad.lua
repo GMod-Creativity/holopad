@@ -13,7 +13,6 @@
 //*/
 
 
-include("holopad/gui/DColorMixer_Holopad.lua")
 include("holopad/gui/DEntityDialogue_Holopad.lua")
 
 
@@ -131,7 +130,7 @@ Choose the unit in the list.
 	local ypos = 10 + collabel:GetTall()
 	
 	self.lendata = {mul = 1, short = "GLU"}
-	local List= vgui.Create( "DMultiChoice", apppanel)
+	local List= vgui.Create( "DComboBox", apppanel)
 	List:SetPos(5, ypos)
 	List:SetSize( 100, 20 )
 	List.OnSelect = function(list, idx, val, data) self.lendata = data self:SetDistLabelValue(self:GetTool():GetDistance()) end

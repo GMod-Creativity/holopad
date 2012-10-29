@@ -24,7 +24,7 @@ function PANEL:Init()
 	self:ShowCloseButton(false)
 	
 	self.PaddingX, self.PaddingY, self.TopBarHeight = 4, 4, 19
-	self.ContentX, self.ContentY	= 200, 255
+	self.ContentX, self.ContentY	= 210, 280
 	self.WindowX,  self.WindowY 	= self.ContentX + self.PaddingX*2, self.ContentY + self.PaddingY*2 + self.TopBarHeight
 	
 	self.ControlType = "rotate"
@@ -185,10 +185,12 @@ function PANEL:createControls()
 	
 	MoveWangLabel = vgui.Create("DLabel", movepanel)
 	MoveWangLabel:SetColor(Color(255,255,255))
-	MoveWangLabel:SetFont("default")
+	//MoveWangLabel:SetFont("default")
 	MoveWangLabel:SetText("World Oriented Rotation (PYR)")
 	MoveWangLabel:SetPos(5, ypos)
 	MoveWangLabel:SizeToContents()
+	
+	ypos = ypos + MoveWangLabel:GetTall() + 5
 	
 	local saveColourButton = vgui.Create("DButton", movepanel)
 	saveColourButton:SetText( "Save" )
@@ -202,7 +204,7 @@ function PANEL:createControls()
 	loadColourButton:SetSize(30, MoveWangLabel:GetTall() + 2)
 	loadColourButton:SetPos(58, 21)
 	
-	ypos = ypos + MoveWangLabel:GetTall() + 20
+	ypos = ypos + 20
 	local butpos = ypos
 	
 	local xpanel = vgui.Create("DPanel", movepanel)
@@ -321,7 +323,7 @@ function PANEL:createControls()
 	
 	GridLabel = vgui.Create("DLabel", gridpanel)
 	GridLabel:SetColor(Color(255,255,255))
-	GridLabel:SetFont("default")
+	//GridLabel:SetFont("default")
 	GridLabel:SetText("Angular Snap (degs)")
 	GridLabel:SetPos(5, ypos)
 	GridLabel:SizeToContents()

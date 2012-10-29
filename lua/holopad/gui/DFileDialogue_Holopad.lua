@@ -100,26 +100,26 @@ function PANEL:doneButtonClicked()
 	local curfile, fentry = self:GetCurrentFile()
 	if !curfile or curfile == "" or !fentry or fentry == "" then
 		self.doneButton:SetText("No file name entered!")
-		timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Create(tostring(self.doneButton), 3, 1, function() self.doneButton:SetText("Done!") end)
 		return
 	end
 	
 	if !self.loading and !string.match(fentry, "^([%a%s%d%.-_]+)$") then
 		self.doneButton:SetText("File name is invalid! (a-Z, 0-9, _-)")
-		timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Create(tostring(self.doneButton), 3, 1, function() self.doneButton:SetText("Done!") end)
 		return
 	end
 
-	local files = file.Find(curfile)
+	local files = file.Find(curfile, "DATA")
 	if files and table.Count(files) != 0 then 
 		if !self.loading and !self.checkOverwrite:GetChecked() then
 			self.doneButton:SetText("File exists and overwrite is disabled!")
-			timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
+			timer.Create(tostring(self.doneButton), 3, 1, function() self.doneButton:SetText("Done!") end)
 			return
 		end
 	elseif self.loading then
 		self.doneButton:SetText("The selected file does not exist!")
-		timer.Create(tostring(self.doneButton), 3, 1, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Create(tostring(self.doneButton), 3, 1, function() self.doneButton:SetText("Done!") end)
 		return
 	end
 	
@@ -138,13 +138,13 @@ local function rPopulateTree(path, node, foldername, dofiles)
 	local newnode = node:AddNode(foldername)
 	newnode.RepresentedDir = path
 	
-	local dirs = file.FindDir(path.."/*")
+	local _, dirs = file.Find(path.."/*", "DATA")
 	for _, dir in pairs(dirs) do
 		rPopulateTree(path.."/"..dir, newnode, dir or "Unnamed?!?!", dofiles)
 	end
 	
 	if dofiles then
-		local files = file.Find(path.."/*.txt")
+		local files = file.Find(path.."/*.txt", "DATA")
 		local filenode
 		for _, file in pairs(files) do
 			filenode = newnode:AddNode(file)

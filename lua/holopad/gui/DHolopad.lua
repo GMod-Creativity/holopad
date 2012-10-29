@@ -77,7 +77,7 @@ function PANEL:Init()
 	local savemenubutton = vgui.Create( "DCentredImageButton", savebutton )
 	savemenubutton:SetSize( 18, 18 )
 	savemenubutton:SetText("")
-	savemenubutton:SetImage("gui/silkicons/application_view_detail")
+	savemenubutton:SetImage("icon16/application_view_detail.png")
 	savemenubutton:SetTooltip( "Set Save Options" )
 	savemenubutton.OnMousePressed =	function()
 										if !self.ModelObj then Error("No ModelObj exists, cannot create selection list.") return end
@@ -162,7 +162,7 @@ function PANEL:Init()
 	local selmenubutton = vgui.Create( "DCentredImageButton", sel )
 	selmenubutton:SetSize( 18, 18 )
 	selmenubutton:SetText("")
-	selmenubutton:SetImage("gui/silkicons/application_view_detail")
+	selmenubutton:SetImage("icon16/application_view_detail.png")
 	selmenubutton:SetTooltip( "Find Hologram in List" )
 	selmenubutton.OnMousePressed =	function()
 										if !self.ModelObj then Error("No ModelObj exists, cannot create selection list.") return end
@@ -222,7 +222,7 @@ function PANEL:Init()
 	self.contextPanel = vgui.Create( "DContextPanel_SelectMode_Holopad", self )
 	
 	local last = Holopad.AUTOSAVE_DIR .. "/autosave_onclose.txt"
-	local newmdl = Holopad.PRJ.Load(file.Exists(last) and last or "Holopad/holopad.txt")
+	local newmdl = Holopad.PRJ.Load(file.Exists(last, "DATA") and last or "Holopad/holopad.txt")
 	self:SetModelObj(newmdl)
 	
 	local oldclose = self.Close
@@ -235,7 +235,7 @@ function PANEL:Init()
 						oldclose(self)
 					end
 	
-	timer.Create(Holopad.AUTOSAVE_TIMER, Holopad.AutosaveWait, 0, autosave, self)
+	timer.Create(Holopad.AUTOSAVE_TIMER, Holopad.AutosaveWait, 0, function() autosave(self) end)
 	
 	
 	

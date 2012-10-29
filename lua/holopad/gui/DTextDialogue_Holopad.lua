@@ -97,7 +97,7 @@ function PANEL:doneButtonClicked()
 	
 	if !sel or sel == "" then
 		self.doneButton:SetText("No text entered!")
-		timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Simple(3, function() self.doneButton:SetText("Done!") end)
 		return
 	end
 	
@@ -106,7 +106,7 @@ function PANEL:doneButtonClicked()
 		local err = self.validator(sel)
 		if err then
 			self.doneButton:SetText(err)
-			timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+			timer.Simple(3, function() self.doneButton:SetText("Done!") end)
 			return
 		end
 	end
@@ -120,7 +120,7 @@ function PANEL:doneButtonClicked()
 	end
 	
 	self.doneButton:SetText("ERROR: No callback, tell Bubbus!")
-	timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+	timer.Simple(3, function() self.doneButton:SetText("Done!") end)
 	return
 end
 

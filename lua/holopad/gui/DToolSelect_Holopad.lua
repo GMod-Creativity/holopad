@@ -147,7 +147,7 @@ function PANEL:doneButtonClicked()
 	
 	if !sel or sel == "" then
 		self.doneButton:SetText("No tool selected!")
-		timer.Simple(3, self.doneButton.SetText, self.doneButton, "Done!")
+		timer.Simple(3, function() self.doneButton:SetText("Done!") end)
 		return
 	end
 	

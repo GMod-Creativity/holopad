@@ -53,7 +53,7 @@ function this:doSnap(pass, lpos)
 		local pos = self.DragEnt:getScale()
 		//local ang = self.DragEnt:getAng()
 		local dist = Holopad.ScaleSnap//pass:GetViewport():GetCamDist(self.DragEnt)
-		//pos = WorldToLocal( pos, Angle(), Vector(), ang )
+		//pos = WorldToLocal( pos, Angle(), Vector(1, 1, 1), ang )
 		//dist = getSnapValue(dist/800)	//TODO: snap grid value based on context control panel
 		
 		if		self.DragDir == DRAGDIR_FOR then
@@ -65,7 +65,7 @@ function this:doSnap(pass, lpos)
 		end
 		
 		//pos = roundToSnap(pos, dist)
-		//pos = LocalToWorld( pos, Angle(), Vector(), ang )
+		//pos = LocalToWorld( pos, Angle(), Vector(1, 1, 1), ang )
 		self.DragEnt:setScale(pos)
 	end
 end
@@ -117,7 +117,7 @@ function this:leftDragged(pass, lpos, delta)
 	if !(svent && svdng) then Error("Tried to scale an Entity but " .. (!svent and "Entity's screen position" or "Dongle's screen position") .." was undefined!") end
 	
 	local svdir = svdng - svent
-	local dir = (math.Rad2Deg(math.acos(svdir:GetNormalized():Dot(Vector(dx, dy, 0):Normalize()))) >= 90 and 1 or -1)
+	local dir = (math.deg(math.acos(svdir:GetNormalized():Dot(Vector(dx, dy, 0):GetNormalized()))) >= 90 and 1 or -1)
 	
 	local scale = dragent:getScale()
 	local scalerel = scale / math.min(scale.x, scale.y, scale.z)	// required to retain proportions during uniform scale

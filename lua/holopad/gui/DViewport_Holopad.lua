@@ -134,7 +134,7 @@ function PANEL:Init()
 	self.showStats = false
 	self.EntModels = {}
 	self.HiddenLookup = {}
-	self.FOVmod = 0.79	// TODO: remove the need for this.  required due to oddness.
+	self.FOVmod = 1//0.79	// TODO: remove the need for this.  required due to oddness.
 	self.lastWide = self:GetWide()
 	
     self:SetLookAt( Vector(0,0,0) )
@@ -410,7 +410,10 @@ function PANEL:SetScaleOf(model, scale)
 		scale = Vector(1, 1, 1)
 	end
 	
-	model:SetModelScale(scale)	
+	local mat = Matrix()
+	mat:Scale(scale)
+	model:EnableMatrix("RenderMultiply", mat)
+	//model:SetModelScale(scale)	
 	model.curModelScale = scale
 	//model:SetRenderBounds(scale * model:OBBMaxs(), scale * model:OBBMins())
 
@@ -688,7 +691,8 @@ end
 		the Viewport camera's direction vector
  */
 function PANEL:GetDirVec()
-	return (self.vLookatPos - self.vCamPos):Normalize()
+	local ret = (self.vLookatPos - self.vCamPos):GetNormalized()
+	return ret
 end
 
 
@@ -791,7 +795,7 @@ function PANEL:Paint(w, h)
     cam.IgnoreZ(true)
     
     render.SuppressEngineLighting(true)
-    render.SetLightingOrigin(Vector())
+    render.SetLightingOrigin(Vector(1, 1, 1))
     render.ResetModelLighting(self.colAmbientLight.r/255, self.colAmbientLight.g/255, self.colAmbientLight.b/255)
 	
 	local col, overmat

@@ -13,7 +13,6 @@
 //*/
 
 
-include("holopad/gui/DColorMixer_Holopad.lua")
 include("holopad/gui/DEntityDialogue_Holopad.lua")
 
 
