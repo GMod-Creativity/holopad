@@ -223,6 +223,7 @@ function PANEL:Init()
 	
 	local last = Holopad.AUTOSAVE_DIR .. "/autosave_onclose.txt"
 	local newmdl = Holopad.PRJ.Load(file.Exists(last, "DATA") and last or "Holopad/holopad.txt")
+	if !newmdl then newmdl = Holopad.Model:New() end
 	self:SetModelObj(newmdl)
 	
 	local oldclose = self.Close
