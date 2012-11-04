@@ -79,13 +79,14 @@ end
 
 
 function PANEL:Close2()
-	hook.Remove(Holopad.MODEL_UPDATE .. tostring(self:GetModelObj()), tostring(self))
+	hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.mdlobj), tostring(self))
 	self:GetParent():closingContext(self)
 end
 
 
 
 function PANEL:SetModelObj(mdl)
+	if !mdl then return end
 	if self.mdlobj then
 		hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.mdlobj), tostring(self))
 	end
@@ -393,6 +394,7 @@ function PANEL:createControls()
 	updaters.material	= 	function(update)	matEntry:SetText(update.material or "")	end
 	
 	self.receiveUpdate = function(update)
+	
 		local doUpdate = false
 		for k, v in pairs(update) do
 			if updaters[k] then

@@ -82,6 +82,7 @@ end
 
 
 function PANEL:SetModelObj(mdl)
+	if !mdl then return end
 	if self.mdlobj then
 		hook.Remove(Holopad.MODEL_UPDATE .. tostring(self.mdlobj), tostring(self))
 	end
