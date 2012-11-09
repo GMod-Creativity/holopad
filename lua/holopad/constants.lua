@@ -13,7 +13,7 @@
 //*/
 
 // Hopefully I remember to update this, cba to automate.
-Holopad.LAST_UPDATED	= "29/10/2012 (BETA 6.66)"
+Holopad.LAST_UPDATED	= "09/11/2012 (BETA 6.7)"
 Holopad.LODSA_HURRS		=
 {
 	"if a holo gotta attitude",
@@ -54,7 +54,10 @@ Holopad.LODSA_HURRS		=
 	"2spooky",
 	"horrifying holoween",
 	"tip your scripter!",
-	"hi5 lua community!"
+	"hi5 lua community!",
+	"sv_allowcslua 0",
+	"email bubbus",
+	"complain about errors - don't report them!!!"
 }
 
 // Change this if the error model is annoying.

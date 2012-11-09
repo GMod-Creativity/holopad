@@ -111,4 +111,7 @@ function Holopad.VectorClamp(self, clampval)
 end
 
 
+file.CreateDir("Holopad")
+file.CreateDir("HolopadData")
+
 include("holopad/folder.lua")

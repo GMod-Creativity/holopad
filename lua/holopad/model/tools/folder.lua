@@ -14,3 +14,4 @@ print("Including holopad/model/tools")
 
 include("holopad/model/tools/obj_Mirror.lua")
 include("holopad/model/tools/obj_Measure.lua")
+include("holopad/model/tools/obj_FlipScaleXY.lua")

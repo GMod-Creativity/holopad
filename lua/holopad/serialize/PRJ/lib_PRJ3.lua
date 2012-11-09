@@ -54,6 +54,7 @@ function lib.Save( modelobj, path, overwrite )
 	
 	//savefile:Close()
 	savefile.Write = nil
+	file.CreateDir(string.match(path, "^(.*/)[^/]*$"))
 	file.Write(path, table.concat(savefile))
 
 	return true
