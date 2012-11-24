@@ -411,7 +411,7 @@ function PANEL:SetScaleOf(model, scale)
 	end
 	
 	local mat = Matrix()
-	mat:Scale(scale)
+	mat:Scale(Vector(scale.y, scale.x, scale.z))
 	model:EnableMatrix("RenderMultiply", mat)
 	//model:SetModelScale(scale)	
 	model.curModelScale = scale

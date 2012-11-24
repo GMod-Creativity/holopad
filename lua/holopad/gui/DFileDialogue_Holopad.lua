@@ -139,19 +139,23 @@ local function rPopulateTree(path, node, foldername, dofiles)
 	newnode.RepresentedDir = path
 	
 	local _, dirs = file.Find(path.."/*", "DATA")
-	for _, dir in pairs(dirs) do
-		rPopulateTree(path.."/"..dir, newnode, dir or "Unnamed?!?!", dofiles)
+	if dirs then
+		for _, dir in pairs(dirs) do
+			rPopulateTree(path.."/"..dir, newnode, dir or "Unnamed?!?!", dofiles)
+		end
 	end
 	
 	if dofiles then
 		local files = file.Find(path.."/*.txt", "DATA")
-		local filenode
-		for _, file in pairs(files) do
-			filenode = newnode:AddNode(file)
-			filenode.isFile = true
-			filenode.filename = file
-			filenode.RepresentedDir = path.."/"..file
-			filenode.Icon:SetImage( "gui/silkicons/palette" )
+		if files then
+			local filenode
+			for _, file in pairs(files) do
+				filenode = newnode:AddNode(file)
+				filenode.isFile = true
+				filenode.filename = file
+				filenode.RepresentedDir = path.."/"..file
+				filenode.Icon:SetImage( "gui/silkicons/palette" )
+			end
 		end
 	end
 	
