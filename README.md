@@ -1,7 +1,7 @@
 <!-- Copyright (C) 2012 Bubbus -->
 # Holopad - A Hologram modelling GUI/exporter
 
-### A Hologram modelling GUI/exporter made by Bubbus (splambob) and released on 24/08/2012 08:16 AM
+### A Hologram modelling GUI/exporter made by [Bubbus](https://github.com/bubbus) (splambob) and released on 24/08/2012 08:16 AM
 
 (I'm pretty sure this counts as a Wiremod Addon )
 
