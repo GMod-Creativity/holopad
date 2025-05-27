@@ -84,13 +84,13 @@ ONGOING:
 
 ### Credits
 
-I did most of the work (code, textures etc), but I'd be far behind if not for these people;
-**Cre8or, Lubstar, PcmciaKai, The Emperor of Justice!!!** (sorry if i forgot anyone) : The contributing beta team
-**The Emperor of Justice!!!** created the default "Holopad" Project file
-**The Gluttony community** for putting up with my development thread :v:
-**Vercas**; contributing a holo creation template and creating the vON de/serializer (tyvm, it rocks!)
-**The FP build community** for helping me test the earlier versions of Holopad.
-**The FP lua community** for answering questions and being awesome.
+I did most of the work (code, textures etc), but I'd be far behind if not for these people;\
+**Cre8or, Lubstar, PcmciaKai, The Emperor of Justice!!!** (sorry if i forgot anyone) : The contributing beta team\
+**The Emperor of Justice!!!** created the default "Holopad" Project file\
+**The Gluttony community** for putting up with my development thread :v:\
+**Vercas**; contributing a holo creation template and creating the vON de/serializer (tyvm, it rocks!)\
+**The FP build community** for helping me test the earlier versions of Holopad.\
+**The FP lua community** for answering questions and being awesome.\
 **Divran** for fixing the scaling problems with tiny holos.
 
 Have fun!
